@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\CustomerShopController;
 use App\Http\Controllers\ShopCustomerManagementController;
 use App\Http\Controllers\CustomerUpdatesController;
+use App\Http\Controllers\CustomerNotificationController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -84,6 +85,10 @@ Route::get('/update', [CustomerUpdatesController::class, 'show'])
 
 Route::get('/history', [CustomerUpdatesController::class, 'showHistory'])
     ->name('customer.history')
+    ->middleware('auth');
+
+Route::get('/notifications', [CustomerNotificationController::class, 'show'])
+    ->name('customer.notifications')
     ->middleware('auth');
 
 Route::post('/customer/updates/{serviceRecord}/accept', [CustomerUpdatesController::class, 'acceptDelivery'])

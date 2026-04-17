@@ -20,7 +20,8 @@
 
             <div>
               <label class="block text-sm font-semibold mb-1">Business Email</label>
-              <input v-model="form.email" type="email" class="form-input" required />
+              <input v-model="form.email" type="email" class="form-input form-input-readonly" readonly required />
+              <p class="text-xs text-slate-500 mt-1">You cannot change your email.</p>
               <div v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email[0] }}</div>
             </div>
 
@@ -181,6 +182,7 @@ function deleteGalleryImage(imageId) {
 <style scoped>
 .form-input{ width:100%; padding:.75rem 1rem; border:1px solid rgba(15,23,42,0.08); border-radius:.5rem; }
 .form-input:focus{ outline:none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(20,184,166,0.08); }
+.form-input-readonly{ background:#f3f4f6; cursor:not-allowed; }
 .btn-danger{ display:inline-flex; align-items:center; justify-content:center; padding:.3rem .5rem; border-radius:.5rem; background:#ef4444; color:#fff; font-weight:700; }
 .btn-danger:hover{ opacity:.92; }
 </style>

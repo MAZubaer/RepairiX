@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomerNotification;
 use App\Models\ServiceRecord;
 use App\Models\Shop;
 use Illuminate\Http\Request;
@@ -99,6 +100,12 @@ class ShopCustomerManagementController extends Controller
         $serviceRecord->status = $targetStatus;
         $serviceRecord->save();
 
+        CustomerNotification::create([
+            'customer_id' => $serviceRecord->customer_id,
+            'service_id' => $serviceRecord->service_id,
+            'message' => $this->notificationMessageForStatus($serviceRecord->phone_model, $targetStatus),
+        ]);
+
         return back();
     }
 
@@ -124,6 +131,20 @@ class ShopCustomerManagementController extends Controller
             'mark_complete' => $currentStatus === 'in progress' ? 'completed' : null,
             'sent_from_shop' => $currentStatus === 'completed' ? 'sent from shop' : null,
             default => null,
+        };
+    }
+
+    private function notificationMessageForStatus(?string $phoneModel, string $status): string
+    {
+        $model = trim((string) $phoneModel) !== '' ? trim((string) $phoneModel) : 'your device';
+
+        return match ($status) {
+            'accepted' => "Your {$model} request has been accepted.",
+            'rejected' => "Your {$model} request has been rejected.",
+            'in progress' => "Your {$model} is now in progress.",
+            'completed' => "Your {$model} repair is completed.",
+            'sent from shop' => "Your {$model} has been sent from shop.",
+            default => "Status updated for your {$model} request.",
         };
     }
 }

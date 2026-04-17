@@ -122,7 +122,6 @@ class ShopProfileController extends Controller
 
             $user->update([
                 'name' => $validated['shop_name'],
-                'email' => $validated['email'],
                 'phone' => $validated['phone'],
                 'location' => $validated['shop_address'],
             ]);
