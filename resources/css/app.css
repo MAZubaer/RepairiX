@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root{
+    --color-primary: #14B8A6;
+    --color-dark: #0F172A;
+    --color-accent: #2DD4BF;
+    --color-warning: #F59E0B;
+    --color-background: #F1F5F9;
+}
+
+/* Example utility helpers using the variables */
+.bg-app{ background-color: var(--color-background); }
+.text-primary{ color: var(--color-primary); }
+.bg-primary{ background-color: var(--color-primary); }
+
+/* Button styles */
+.btn-primary{
+    display: inline-block;
+    padding: .75rem 1.6rem;
+    border-radius: .75rem;
+    background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: #fff;
+    box-shadow: 0 8px 26px rgba(20,184,166,0.18);
+    transition: transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s ease, opacity .12s ease, background .16s ease;
+    min-width: 200px;
+    text-align: center;
+    font-weight: 600;
+}
+.btn-primary:hover{ transform: translateY(-3px); box-shadow: 0 12px 36px rgba(20,184,166,0.22); }
+
+.btn-outline-primary{
+    display: inline-block;
+    padding: .75rem 1.6rem;
+    border-radius: .75rem;
+    background: rgba(243,247,249,0.9); /* soft light background */
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    transition: background .16s ease, color .12s ease, box-shadow .16s ease, transform .16s cubic-bezier(.2,.9,.2,1), border-color .12s ease;
+    min-width: 200px;
+    text-align: center;
+    font-weight: 600;
+}
+/* On hover, the outline button morphs into the filled gradient to match the primary button */
+.btn-outline-primary:hover{
+    background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(20,184,166,0.22);
+}
