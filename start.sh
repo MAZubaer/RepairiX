@@ -11,5 +11,8 @@ php artisan migrate --force
 # Link storage directory for public access
 php artisan storage:link
 
+# Start the Laravel Queue Worker in the background
+php artisan queue:work --tries=3 &
+
 # Start Apache in FOREGROUND
 apache2-foreground
