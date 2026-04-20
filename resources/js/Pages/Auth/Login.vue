@@ -8,7 +8,7 @@
         <p class="text-center text-gray-600 mb-6">Sign in with your email and password</p>
 
         <form @submit.prevent="submit" class="space-y-4 bg-white p-6 rounded-lg shadow-sm border">
-          <div v-if="errors.server" class="text-red-600 text-sm mb-2">{{ errors.server }}</div>
+          <div v-if="form.errors.server" class="text-red-600 text-sm mb-2">{{ form.errors.server }}</div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Email</label>
@@ -17,10 +17,10 @@
               required
               type="email"
               autocomplete="email"
-              :class="['form-input', hasError('email') ? 'border-red-500' : '']"
+              :class="['form-input', form.errors.email ? 'border-red-500 border-2' : '']"
               placeholder="Enter your email"
             />
-            <div v-if="hasError('email')" class="text-red-500 text-sm mt-1">{{ errors.email[0] }}</div>
+            <div v-if="form.errors.email" class="text-red-500 text-sm mt-1 font-medium">{{ form.errors.email }}</div>
           </div>
 
           <div>
@@ -30,14 +30,14 @@
               required
               type="password"
               autocomplete="current-password"
-              :class="['form-input', hasError('password') ? 'border-red-500' : '']"
+              :class="['form-input', form.errors.password ? 'border-red-500 border-2' : '']"
               placeholder="Enter your password"
             />
-            <div v-if="hasError('password')" class="text-red-500 text-sm mt-1">{{ errors.password[0] }}</div>
+            <div v-if="form.errors.password" class="text-red-500 text-sm mt-1 font-medium">{{ form.errors.password }}</div>
           </div>
 
           <div>
-            <button type="submit" class="btn-primary w-full">Login</button>
+            <button type="submit" class="btn-primary w-full" :disabled="form.processing">Login</button>
           </div>
         </form>
       </div>
@@ -49,24 +49,15 @@
 
 <script setup>
 import Navbar from '../../Components/Navbar.vue'
-import { usePage } from '@inertiajs/inertia-vue3'
-import { Inertia } from '@inertiajs/inertia'
-import { reactive, computed } from 'vue'
+import { useForm } from '@inertiajs/inertia-vue3'
 
-const page = usePage()
-const errors = computed(() => page.props.value.errors || {})
-
-const form = reactive({
+const form = useForm({
   email: '',
   password: '',
 })
 
 function submit() {
-  Inertia.post('/login', form)
-}
-
-function hasError(field) {
-  return Boolean(errors.value[field])
+  form.post('/login')
 }
 </script>
 
