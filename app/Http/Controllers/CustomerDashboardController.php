@@ -22,6 +22,9 @@ class CustomerDashboardController extends Controller
             ->whereHas('user', function ($q) {
                 $q->where('role', 'shop');
             })
+            ->where('subscription_status', 'activated')
+            ->whereNotNull('expiry_date')
+            ->where('expiry_date', '>', now())
             ->orderByDesc('shop_id')
             ->get(['shop_id', 'user_id', 'rating'])
             ->map(function ($shop) {

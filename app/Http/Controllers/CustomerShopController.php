@@ -19,6 +19,14 @@ class CustomerShopController extends Controller
             abort(403);
         }
 
+        $isShopActive = $shop->subscription_status === 'activated'
+            && $shop->expiry_date !== null
+            && $shop->expiry_date->isFuture();
+
+        if (! $isShopActive) {
+            abort(404);
+        }
+
         $shop->load([
             'user:id,name,location',
             'logoImage:image_id,shop_id,image_path',
@@ -55,6 +63,16 @@ class CustomerShopController extends Controller
         $user = $request->user();
         if (! $user || $user->role !== 'customer') {
             abort(403);
+        }
+
+        $isShopActive = $shop->subscription_status === 'activated'
+            && $shop->expiry_date !== null
+            && $shop->expiry_date->isFuture();
+
+        if (! $isShopActive) {
+            return back()->withErrors([
+                'server' => 'This shop is not active right now.',
+            ]);
         }
 
         $customer = Customer::where('user_id', $user->id)->first();
