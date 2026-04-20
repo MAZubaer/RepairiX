@@ -8,8 +8,6 @@
         <p class="text-center text-gray-600 mb-6">Sign in with your email and password</p>
 
         <form @submit.prevent="submit" class="space-y-4 bg-white p-6 rounded-lg shadow-sm border">
-          <div v-if="form.errors.server" class="text-red-600 text-sm mb-2">{{ form.errors.server }}</div>
-
           <div>
             <label class="block text-sm font-semibold mb-1">Email</label>
             <input
@@ -20,7 +18,6 @@
               :class="['form-input', form.errors.email ? 'border-red-500 border-2' : '']"
               placeholder="Enter your email"
             />
-            <div v-if="form.errors.email" class="text-red-500 text-sm mt-1 font-medium">{{ form.errors.email }}</div>
           </div>
 
           <div>
@@ -33,8 +30,9 @@
               :class="['form-input', form.errors.password ? 'border-red-500 border-2' : '']"
               placeholder="Enter your password"
             />
-            <div v-if="form.errors.password" class="text-red-500 text-sm mt-1 font-medium">{{ form.errors.password }}</div>
           </div>
+
+          <div v-if="authError" class="text-red-600 text-sm mt-1">{{ authError }}</div>
 
           <div>
             <button type="submit" class="btn-primary w-full" :disabled="form.processing">Login</button>
@@ -50,11 +48,14 @@
 <script setup>
 import Navbar from '../../Components/Navbar.vue'
 import { useForm } from '@inertiajs/inertia-vue3'
+import { computed } from 'vue'
 
 const form = useForm({
   email: '',
   password: '',
 })
+
+const authError = computed(() => form.errors.email || form.errors.password || form.errors.server || '')
 
 function submit() {
   form.post('/login')
