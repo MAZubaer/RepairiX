@@ -1,12 +1,12 @@
 <template>
   <AppLayout :title="content.title">
     <div class="mx-auto flex max-w-lg flex-col items-center py-16 text-center">
-      <span class="grid size-16 place-items-center rounded-2xl bg-brand-50 text-brand-600">
+      <span class="grid size-16 place-items-center rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400">
         <component :is="content.icon" class="size-8" />
       </span>
-      <p class="mt-6 text-sm font-bold tracking-widest text-brand-600">ERROR {{ status }}</p>
-      <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{{ content.title }}</h1>
-      <p class="mt-3 text-slate-500">{{ content.text }}</p>
+      <p class="mt-6 text-sm font-bold tracking-widest text-brand-600 dark:text-brand-400">ERROR {{ status }}</p>
+      <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">{{ content.title }}</h1>
+      <p class="mt-3 text-slate-500 dark:text-slate-400">{{ content.text }}</p>
       <div class="mt-8 flex gap-3">
         <button type="button" class="btn btn-secondary" @click="goBack">
           <ArrowLeft class="size-4" />

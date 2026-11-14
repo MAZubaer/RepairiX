@@ -1,5 +1,5 @@
 <template>
-  <div v-if="status === 'rejected'" class="flex items-center gap-3 rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 ring-1 ring-rose-200">
+  <div v-if="status === 'rejected'" class="flex items-center gap-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-700 dark:text-rose-300 ring-1 ring-rose-200 dark:ring-rose-500/30">
     <CircleX class="size-5 shrink-0" />
     The shop declined this request.
   </div>
@@ -7,11 +7,11 @@
     <li v-for="(step, i) in STEPS" :key="step.status" class="flex flex-col gap-2">
       <span
         class="h-1.5 rounded-full transition-colors"
-        :class="i < current ? 'bg-brand-500' : i === current ? (current === STEPS.length - 1 ? 'bg-emerald-500' : 'bg-brand-500 animate-pulse') : 'bg-slate-200'"
+        :class="i < current ? 'bg-brand-500' : i === current ? (current === STEPS.length - 1 ? 'bg-emerald-500' : 'bg-brand-500 animate-pulse') : 'bg-slate-200 dark:bg-slate-700'"
       />
       <span
         class="hidden text-[11px] leading-tight font-semibold sm:block"
-        :class="i <= current ? 'text-slate-700' : 'text-slate-400'"
+        :class="i <= current ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500'"
       >{{ step.label }}</span>
     </li>
   </ol>

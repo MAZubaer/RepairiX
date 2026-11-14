@@ -12,11 +12,11 @@
     <AccountTypeSwitch active="shop" class="mb-8" />
 
     <div class="mb-6">
-      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Register your shop</h1>
-      <p class="mt-2 text-slate-500">After signing up you'll pick a monthly or yearly plan to go live.</p>
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Register your shop</h1>
+      <p class="mt-2 text-slate-500 dark:text-slate-400">After signing up you'll pick a monthly or yearly plan to go live.</p>
     </div>
 
-    <div v-if="errors.server" class="mb-5 flex items-start gap-3 rounded-xl bg-rose-50 p-4 text-sm text-rose-700 ring-1 ring-rose-200">
+    <div v-if="errors.server" class="mb-5 flex items-start gap-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 p-4 text-sm text-rose-700 dark:text-rose-300 ring-1 ring-rose-200 dark:ring-rose-500/30">
       <CircleAlert class="mt-0.5 size-4 shrink-0" />
       {{ errors.server }}
     </div>
@@ -68,9 +68,9 @@
       </button>
     </form>
 
-    <p class="mt-8 text-center text-sm text-slate-500">
+    <p class="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
       Already registered?
-      <Link href="/login" class="font-semibold text-brand-700 hover:text-brand-800">Log in</Link>
+      <Link href="/login" class="font-semibold text-brand-700 dark:text-brand-300 hover:text-brand-800 dark:hover:text-brand-200">Log in</Link>
     </p>
   </AuthLayout>
 </template>

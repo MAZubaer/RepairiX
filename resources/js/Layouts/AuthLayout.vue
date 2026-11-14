@@ -1,6 +1,6 @@
 <template>
   <Head :title="title" />
-  <div class="grid min-h-screen bg-white lg:grid-cols-[1fr_minmax(0,560px)] xl:grid-cols-[1fr_minmax(0,640px)]">
+  <div class="grid min-h-screen bg-white dark:bg-slate-900 lg:grid-cols-[1fr_minmax(0,560px)] xl:grid-cols-[1fr_minmax(0,640px)]">
     <!-- Brand panel -->
     <aside class="relative hidden overflow-hidden bg-slate-950 lg:flex lg:flex-col lg:justify-between lg:p-12">
       <div class="pointer-events-none absolute -top-32 -left-24 size-[480px] rounded-full bg-brand-500/30 blur-3xl" />
@@ -22,17 +22,20 @@
         </ul>
       </div>
 
-      <p class="relative text-sm text-slate-500">© {{ year }} RepairiX</p>
+      <p class="relative text-sm text-slate-500 dark:text-slate-400">© {{ year }} RepairiX</p>
     </aside>
 
     <!-- Form panel -->
     <main class="flex flex-col">
       <div class="flex items-center justify-between px-6 py-5 sm:px-10">
         <AppLogo class="lg:invisible" />
-        <Link href="/" class="btn btn-ghost btn-sm">
-          <ArrowLeft class="size-4" />
-          Back to home
-        </Link>
+        <div class="flex items-center gap-1">
+          <ThemeToggle />
+          <Link href="/" class="btn btn-ghost btn-sm">
+            <ArrowLeft class="size-4" />
+            Back to home
+          </Link>
+        </div>
       </div>
       <div class="flex flex-1 items-center justify-center px-6 pb-12 sm:px-10">
         <div class="w-full max-w-md animate-slide-up">
@@ -47,6 +50,7 @@
 import { Head, Link } from '@inertiajs/vue3'
 import { ArrowLeft, Check } from 'lucide-vue-next'
 import AppLogo from '../Components/AppLogo.vue'
+import ThemeToggle from '../Components/ThemeToggle.vue'
 
 defineProps({
   title: { type: String, default: '' },

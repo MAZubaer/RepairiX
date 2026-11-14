@@ -10,13 +10,13 @@
         <div
           v-for="toast in toasts"
           :key="toast.id"
-          class="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl bg-white p-4 shadow-lift ring-1 ring-slate-200"
+          class="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl bg-white dark:bg-slate-900 p-4 shadow-lift ring-1 ring-slate-200 dark:ring-slate-800"
           role="status"
         >
           <CircleCheck v-if="toast.type === 'success'" class="mt-0.5 size-5 shrink-0 text-emerald-500" />
           <CircleAlert v-else class="mt-0.5 size-5 shrink-0 text-rose-500" />
-          <p class="flex-1 text-sm font-medium text-slate-800">{{ toast.message }}</p>
-          <button type="button" class="text-slate-400 hover:text-slate-600" aria-label="Dismiss" @click="dismiss(toast.id)">
+          <p class="flex-1 text-sm font-medium text-slate-800 dark:text-slate-200">{{ toast.message }}</p>
+          <button type="button" class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400" aria-label="Dismiss" @click="dismiss(toast.id)">
             <X class="size-4" />
           </button>
         </div>

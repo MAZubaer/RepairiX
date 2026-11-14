@@ -13,8 +13,8 @@
       <!-- Business details -->
       <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
         <div>
-          <h2 class="font-bold text-slate-900">Business details</h2>
-          <p class="mt-1 text-sm text-slate-500">How customers find and contact you.</p>
+          <h2 class="font-bold text-slate-900 dark:text-slate-100">Business details</h2>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">How customers find and contact you.</p>
         </div>
         <div class="grid gap-5 sm:grid-cols-2 lg:col-span-2">
           <FormField id="shop_name" label="Shop name" :icon="Store" :error="errors.shop_name">
@@ -43,8 +43,8 @@
       <!-- About -->
       <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
         <div>
-          <h2 class="font-bold text-slate-900">About your shop</h2>
-          <p class="mt-1 text-sm text-slate-500">A short motto and the repairs you offer.</p>
+          <h2 class="font-bold text-slate-900 dark:text-slate-100">About your shop</h2>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">A short motto and the repairs you offer.</p>
         </div>
         <div class="space-y-5 lg:col-span-2">
           <FormField id="motto" label="Motto" optional :error="errors.motto">
@@ -63,8 +63,8 @@
       <!-- Logo -->
       <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
         <div>
-          <h2 class="font-bold text-slate-900">Logo</h2>
-          <p class="mt-1 text-sm text-slate-500">Square images look best. PNG, JPG or WebP, up to 4 MB.</p>
+          <h2 class="font-bold text-slate-900 dark:text-slate-100">Logo</h2>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Square images look best. PNG, JPG or WebP, up to 4 MB.</p>
         </div>
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center lg:col-span-2">
           <Avatar :name="form.shop_name" :src="logoPreview || logo?.url" size="xl" rounded class="shadow-soft" />
@@ -81,7 +81,7 @@
                 Remove
               </button>
             </div>
-            <p v-if="logoPreview" class="text-xs font-medium text-brand-700">New logo selected. Save changes to apply it.</p>
+            <p v-if="logoPreview" class="text-xs font-medium text-brand-700 dark:text-brand-300">New logo selected. Save changes to apply it.</p>
             <p v-if="errors.logo" class="field-error">{{ errors.logo }}</p>
           </div>
         </div>
@@ -89,12 +89,12 @@
 
       <!-- Photos live on their own page -->
       <Link href="/shop/photos" class="card card-hover group flex items-center gap-5 p-6 sm:p-8">
-        <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600">
+        <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400">
           <Camera class="size-7" />
         </span>
         <div class="min-w-0 flex-1">
-          <h2 class="font-bold text-slate-900">Photos</h2>
-          <p class="mt-1 text-sm text-slate-500">
+          <h2 class="font-bold text-slate-900 dark:text-slate-100">Photos</h2>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {{ photoCount ? `${photoCount} photo${photoCount === 1 ? '' : 's'} on your shop page.` : 'No photos yet.' }}
             Upload, reorder and choose your cover photo.
           </p>
@@ -106,10 +106,10 @@
       </Link>
 
       <!-- Sticky save bar -->
-      <div class="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/90 backdrop-blur">
+      <div class="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur">
         <div class="container-page flex items-center justify-between gap-3 py-3">
-          <p class="hidden text-sm text-slate-500 sm:block">
-            <span v-if="form.isDirty" class="font-medium text-amber-700">You have unsaved changes.</span>
+          <p class="hidden text-sm text-slate-500 dark:text-slate-400 sm:block">
+            <span v-if="form.isDirty" class="font-medium text-amber-700 dark:text-amber-300">You have unsaved changes.</span>
             <span v-else>All changes saved.</span>
           </p>
           <div class="flex w-full gap-2 sm:w-auto">

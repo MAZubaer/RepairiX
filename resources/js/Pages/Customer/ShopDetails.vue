@@ -1,6 +1,6 @@
 <template>
   <AppLayout :title="shop.name">
-    <Link href="/dashboard/customer" class="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-slate-800">
+    <Link href="/dashboard/customer" class="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
       <ArrowLeft class="size-4" />
       All shops
     </Link>
@@ -16,19 +16,19 @@
 
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
       <section class="card p-6 sm:p-8 lg:col-span-2">
-        <h2 class="flex items-center gap-2 text-lg font-bold text-slate-900">
-          <ListChecks class="size-5 text-brand-600" />
+        <h2 class="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-slate-100">
+          <ListChecks class="size-5 text-brand-600 dark:text-brand-400" />
           Services
         </h2>
-        <p v-if="shop.services_provided" class="mt-4 leading-relaxed whitespace-pre-line text-slate-600">{{ shop.services_provided }}</p>
-        <p v-else class="mt-4 text-slate-400">This shop hasn't listed its services yet. Send a request and describe your problem.</p>
+        <p v-if="shop.services_provided" class="mt-4 leading-relaxed whitespace-pre-line text-slate-600 dark:text-slate-400">{{ shop.services_provided }}</p>
+        <p v-else class="mt-4 text-slate-400 dark:text-slate-500">This shop hasn't listed its services yet. Send a request and describe your problem.</p>
       </section>
 
       <aside class="card h-fit p-6 sm:p-8 lg:sticky lg:top-24">
-        <h2 class="text-lg font-bold text-slate-900">How it works</h2>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100">How it works</h2>
         <ol class="mt-5 space-y-4">
-          <li v-for="(step, i) in howItWorks" :key="step" class="flex gap-3 text-sm text-slate-600">
-            <span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand-50 text-xs font-bold text-brand-700">{{ i + 1 }}</span>
+          <li v-for="(step, i) in howItWorks" :key="step" class="flex gap-3 text-sm text-slate-600 dark:text-slate-400">
+            <span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand-50 dark:bg-brand-500/10 text-xs font-bold text-brand-700 dark:text-brand-300">{{ i + 1 }}</span>
             {{ step }}
           </li>
         </ol>
@@ -37,8 +37,8 @@
     </div>
 
     <section class="card mt-6 p-6 sm:p-8">
-      <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-slate-900">
-        <ImageIcon class="size-5 text-brand-600" />
+      <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-slate-100">
+        <ImageIcon class="size-5 text-brand-600 dark:text-brand-400" />
         Photos
       </h2>
       <ShopGallery :images="visibleGallery" />
@@ -46,7 +46,7 @@
 
     <Modal :show="showModal" title="Request a repair" :subtitle="`Your request goes straight to ${shop.name}.`" @close="showModal = false">
       <form id="repair-request" class="space-y-4" novalidate @submit.prevent="submitRequest">
-        <div v-if="form.errors.server" class="flex items-start gap-3 rounded-xl bg-rose-50 p-4 text-sm text-rose-700 ring-1 ring-rose-200">
+        <div v-if="form.errors.server" class="flex items-start gap-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 p-4 text-sm text-rose-700 dark:text-rose-300 ring-1 ring-rose-200 dark:ring-rose-500/30">
           <CircleAlert class="mt-0.5 size-4 shrink-0" />
           {{ form.errors.server }}
         </div>

@@ -1,7 +1,7 @@
 <template>
   <span
     class="inline-flex shrink-0 items-center justify-center overflow-hidden font-bold"
-    :class="[sizeClass, rounded ? 'rounded-2xl' : 'rounded-full', src ? 'bg-white ring-1 ring-slate-200' : avatarTone(name)]"
+    :class="[sizeClass, rounded ? 'rounded-2xl' : 'rounded-full', src ? 'bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800' : avatarTone(name)]"
   >
     <img v-if="src" :src="src" :alt="`${name} logo`" class="size-full object-cover" />
     <span v-else>{{ initials(name) }}</span>

@@ -33,16 +33,16 @@
           <div v-if="!shop.cover_url" class="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:16px_16px]" />
         </div>
         <div class="relative flex flex-1 flex-col px-5 pb-5">
-          <Avatar :name="shop.name" :src="shop.logo_url" size="lg" rounded class="relative z-10 -mt-7 shadow-soft ring-4 ring-white" />
-          <h3 class="mt-3 truncate text-lg font-bold text-slate-900 group-hover:text-brand-700">{{ shop.name }}</h3>
-          <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-slate-500">
+          <Avatar :name="shop.name" :src="shop.logo_url" size="lg" rounded class="relative z-10 -mt-7 shadow-soft ring-4 ring-white dark:ring-slate-900" />
+          <h3 class="mt-3 truncate text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-brand-700 dark:group-hover:text-brand-300">{{ shop.name }}</h3>
+          <p class="mt-1 flex items-center gap-1.5 truncate text-sm text-slate-500 dark:text-slate-400">
             <MapPin class="size-4 shrink-0" />
             {{ shop.location }}
           </p>
-          <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+          <div class="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
             <StarRating v-if="shop.rating > 0" :model-value="shop.rating" show-value />
-            <span v-else class="chip bg-slate-100 text-slate-500">New shop</span>
-            <span class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
+            <span v-else class="chip bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">New shop</span>
+            <span class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 dark:text-brand-300">
               View shop
               <ArrowRight class="size-4 transition group-hover:translate-x-0.5" />
             </span>

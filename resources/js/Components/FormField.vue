@@ -3,12 +3,12 @@
     <div v-if="label" class="flex items-center justify-between">
       <label :for="id" class="label">
         {{ label }}
-        <span v-if="optional" class="font-normal text-slate-400">(optional)</span>
+        <span v-if="optional" class="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
       </label>
       <slot name="label-aside" />
     </div>
     <div class="relative">
-      <span v-if="icon" class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400">
+      <span v-if="icon" class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400 dark:text-slate-500">
         <component :is="icon" class="size-4" />
       </span>
       <slot :id="id" :input-class="['input', icon ? 'pl-10' : '', error ? 'input-error' : '']" />

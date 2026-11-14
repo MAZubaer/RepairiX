@@ -19,15 +19,15 @@
         @mouseenter="interactive && (hover = n)"
         @click="interactive && $emit('update:modelValue', n)"
       >
-        <Star :class="[sizeClass, 'text-slate-200']" fill="currentColor" stroke-width="0" />
+        <Star :class="[sizeClass, 'text-slate-200 dark:text-slate-700']" fill="currentColor" stroke-width="0" />
         <span class="absolute inset-0 overflow-hidden" :class="interactive ? 'p-0.5' : ''" :style="{ width: fillWidth(n) }">
           <Star :class="[sizeClass, 'text-amber-400']" fill="currentColor" stroke-width="0" />
         </span>
       </component>
     </div>
-    <span v-if="showValue" class="text-sm font-semibold text-slate-700">
+    <span v-if="showValue" class="text-sm font-semibold text-slate-700 dark:text-slate-300">
       {{ display.toFixed(1) }}
-      <span v-if="count !== null" class="font-normal text-slate-400">({{ count }})</span>
+      <span v-if="count !== null" class="font-normal text-slate-400 dark:text-slate-500">({{ count }})</span>
     </span>
   </div>
 </template>

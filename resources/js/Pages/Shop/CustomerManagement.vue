@@ -9,7 +9,7 @@
     </div>
 
     <div class="card overflow-hidden">
-      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-800 p-4 lg:flex-row lg:items-center lg:justify-between">
         <FilterTabs v-model="tab" :tabs="tabs" />
         <div class="lg:w-80">
           <SearchInput v-model="search" placeholder="Search name, phone or model…" />
@@ -35,19 +35,19 @@
                 <div class="flex items-center gap-3">
                   <Avatar :name="record.customer_name" size="sm" />
                   <div class="min-w-0">
-                    <p class="font-semibold text-slate-900">{{ record.customer_name }}</p>
-                    <p class="text-xs text-slate-500">{{ record.contact }} · {{ formatDate(record.date) }}</p>
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ record.customer_name }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ record.contact }} · {{ formatDate(record.date) }}</p>
                   </div>
                 </div>
               </td>
               <td>
-                <p class="font-medium text-slate-800">{{ record.phone_model }}</p>
-                <p class="font-mono text-xs text-slate-400">{{ record.phone_imei_number }}</p>
+                <p class="font-medium text-slate-800 dark:text-slate-200">{{ record.phone_model }}</p>
+                <p class="font-mono text-xs text-slate-400 dark:text-slate-500">{{ record.phone_imei_number }}</p>
               </td>
               <td class="max-w-xs">
-                <p class="line-clamp-2 text-slate-600">{{ record.customer_problem }}</p>
+                <p class="line-clamp-2 text-slate-600 dark:text-slate-400">{{ record.customer_problem }}</p>
               </td>
-              <td class="font-semibold whitespace-nowrap text-slate-900">{{ formatMoney(record.repair_cost) }}</td>
+              <td class="font-semibold whitespace-nowrap text-slate-900 dark:text-slate-100">{{ formatMoney(record.repair_cost) }}</td>
               <td><StatusBadge :status="record.status" /></td>
               <td>
                 <div class="flex items-center justify-end gap-2">
@@ -70,21 +70,21 @@
       </div>
 
       <!-- Mobile cards -->
-      <ul v-if="filtered.length" class="divide-y divide-slate-100 lg:hidden">
+      <ul v-if="filtered.length" class="divide-y divide-slate-100 dark:divide-slate-800 lg:hidden">
         <li v-for="record in filtered" :key="record.service_id" class="p-4">
           <div class="flex items-start justify-between gap-3">
             <div class="flex min-w-0 items-center gap-3">
               <Avatar :name="record.customer_name" size="sm" />
               <div class="min-w-0">
-                <p class="truncate font-semibold text-slate-900">{{ record.customer_name }}</p>
-                <p class="truncate text-xs text-slate-500">{{ record.phone_model }} · {{ record.contact }}</p>
+                <p class="truncate font-semibold text-slate-900 dark:text-slate-100">{{ record.customer_name }}</p>
+                <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ record.phone_model }} · {{ record.contact }}</p>
               </div>
             </div>
             <StatusBadge :status="record.status" />
           </div>
-          <p class="mt-3 line-clamp-2 text-sm text-slate-600">{{ record.customer_problem }}</p>
+          <p class="mt-3 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{{ record.customer_problem }}</p>
           <div class="mt-3 flex items-center justify-between gap-2">
-            <span class="text-sm font-semibold text-slate-900">{{ formatMoney(record.repair_cost, 'No quote') }}</span>
+            <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ formatMoney(record.repair_cost, 'No quote') }}</span>
             <div class="flex gap-2">
               <button
                 v-if="primaryAction(record)"
@@ -121,15 +121,15 @@
       <div v-if="selected" class="space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <StatusBadge :status="selected.status" />
-          <span class="text-sm text-slate-500">Received {{ formatDate(selected.date) }}</span>
+          <span class="text-sm text-slate-500 dark:text-slate-400">Received {{ formatDate(selected.date) }}</span>
         </div>
 
         <RepairProgress :status="selected.status" />
 
-        <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200/70">
-          <p class="text-xs font-semibold tracking-wide text-slate-400 uppercase">Customer's description</p>
-          <p class="mt-1 text-sm whitespace-pre-line text-slate-700">{{ selected.customer_problem }}</p>
-          <p class="mt-3 text-xs text-slate-500">IMEI <span class="font-mono text-slate-700">{{ selected.phone_imei_number }}</span></p>
+        <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/40 p-4 ring-1 ring-slate-200/70 dark:ring-slate-800">
+          <p class="text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase">Customer's description</p>
+          <p class="mt-1 text-sm whitespace-pre-line text-slate-700 dark:text-slate-300">{{ selected.customer_problem }}</p>
+          <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">IMEI <span class="font-mono text-slate-700 dark:text-slate-300">{{ selected.phone_imei_number }}</span></p>
         </div>
 
         <div v-if="selected.editable" class="grid gap-4 sm:grid-cols-[1fr_200px]">
@@ -147,15 +147,15 @@
         <div v-else class="grid gap-4 sm:grid-cols-2">
           <div>
             <p class="label">Your diagnosis</p>
-            <p class="text-sm whitespace-pre-line text-slate-700">{{ selected.shop_problem || 'Not provided' }}</p>
+            <p class="text-sm whitespace-pre-line text-slate-700 dark:text-slate-300">{{ selected.shop_problem || 'Not provided' }}</p>
           </div>
           <div>
             <p class="label">Repair cost</p>
-            <p class="text-sm font-semibold text-slate-900">{{ formatMoney(selected.repair_cost, 'Not set') }}</p>
+            <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ formatMoney(selected.repair_cost, 'Not set') }}</p>
           </div>
         </div>
 
-        <div v-if="selected.status === 'in progress' && !readyToComplete" class="flex items-start gap-3 rounded-xl bg-amber-50 p-3.5 text-sm text-amber-800 ring-1 ring-amber-200">
+        <div v-if="selected.status === 'in progress' && !readyToComplete" class="flex items-start gap-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 p-3.5 text-sm text-amber-800 dark:text-amber-200 ring-1 ring-amber-200 dark:ring-amber-500/30">
           <Info class="mt-0.5 size-4 shrink-0" />
           Save a diagnosis and a repair cost before marking this job as completed.
         </div>

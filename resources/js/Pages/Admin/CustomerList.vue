@@ -10,9 +10,9 @@
     </div>
 
     <div class="card overflow-hidden">
-      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-sm text-slate-500">
-          <span class="font-semibold text-slate-800">{{ filteredCustomers.length }}</span> customers
+      <div class="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-800 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          <span class="font-semibold text-slate-800 dark:text-slate-200">{{ filteredCustomers.length }}</span> customers
         </p>
         <div class="sm:w-80">
           <SearchInput v-model="search" placeholder="Search name, email, phone or address…" />
@@ -37,22 +37,22 @@
                 <div class="flex items-center gap-3">
                   <Avatar :name="customer.name" />
                   <div>
-                    <p class="font-semibold text-slate-900">{{ customer.name }}</p>
-                    <p class="text-xs text-slate-500">#C{{ String(customer.customer_id).padStart(4, '0') }}</p>
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ customer.name }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">#C{{ String(customer.customer_id).padStart(4, '0') }}</p>
                   </div>
                 </div>
               </td>
               <td>
-                <p class="text-slate-700">{{ customer.email }}</p>
-                <p class="text-xs text-slate-500">{{ customer.phone }}</p>
+                <p class="text-slate-700 dark:text-slate-300">{{ customer.email }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ customer.phone }}</p>
               </td>
-              <td class="text-slate-600">{{ customer.address }}</td>
-              <td class="whitespace-nowrap text-slate-600">{{ formatDate(customer.join_date) }}</td>
+              <td class="text-slate-600 dark:text-slate-400">{{ customer.address }}</td>
+              <td class="whitespace-nowrap text-slate-600 dark:text-slate-400">{{ formatDate(customer.join_date) }}</td>
               <td>
                 <div class="flex items-center gap-1.5 text-xs font-semibold">
-                  <span class="chip bg-slate-100 text-slate-700" title="Total">{{ customer.total_requests }} total</span>
-                  <span v-if="customer.active_requests" class="chip bg-amber-50 text-amber-700" title="Active">{{ customer.active_requests }} active</span>
-                  <span v-if="customer.completed_requests" class="chip bg-emerald-50 text-emerald-700" title="Completed">{{ customer.completed_requests }} done</span>
+                  <span class="chip bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" title="Total">{{ customer.total_requests }} total</span>
+                  <span v-if="customer.active_requests" class="chip bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300" title="Active">{{ customer.active_requests }} active</span>
+                  <span v-if="customer.completed_requests" class="chip bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" title="Completed">{{ customer.completed_requests }} done</span>
                 </div>
               </td>
               <td class="text-right">

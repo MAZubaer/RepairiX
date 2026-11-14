@@ -1,13 +1,13 @@
 <template>
   <Modal :show="show" size="sm" @close="$emit('cancel')">
     <div class="flex gap-4">
-      <span class="grid size-11 shrink-0 place-items-center rounded-full" :class="danger ? 'bg-rose-50 text-rose-600' : 'bg-brand-50 text-brand-600'">
+      <span class="grid size-11 shrink-0 place-items-center rounded-full" :class="danger ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400'">
         <TriangleAlert v-if="danger" class="size-5" />
         <Info v-else class="size-5" />
       </span>
       <div>
-        <h3 class="text-base font-bold text-slate-900">{{ title }}</h3>
-        <p class="mt-1 text-sm text-slate-500">{{ message }}</p>
+        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">{{ title }}</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ message }}</p>
       </div>
     </div>
     <template #footer>

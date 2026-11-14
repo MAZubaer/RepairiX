@@ -12,18 +12,18 @@
         @click="statusFilter = statusFilter === item.status ? 'all' : item.status"
       >
         <div>
-          <p class="text-xs font-medium text-slate-500">{{ item.label }}</p>
-          <p class="mt-1 text-2xl font-extrabold text-slate-900">{{ summary[item.key] ?? 0 }}</p>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ item.label }}</p>
+          <p class="mt-1 text-2xl font-extrabold text-slate-900 dark:text-slate-100">{{ summary[item.key] ?? 0 }}</p>
         </div>
         <span class="size-2.5 rounded-full" :class="item.dot" />
       </button>
     </div>
 
     <div class="card overflow-hidden">
-      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-sm text-slate-500">
-          Showing <span class="font-semibold text-slate-800">{{ filteredRequests.length }}</span> of {{ requests.length }}
-          <button v-if="statusFilter !== 'all'" type="button" class="ml-2 font-semibold text-brand-700 hover:underline" @click="statusFilter = 'all'">
+      <div class="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-800 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Showing <span class="font-semibold text-slate-800 dark:text-slate-200">{{ filteredRequests.length }}</span> of {{ requests.length }}
+          <button v-if="statusFilter !== 'all'" type="button" class="ml-2 font-semibold text-brand-700 dark:text-brand-300 hover:underline" @click="statusFilter = 'all'">
             Clear filter
           </button>
         </p>
@@ -48,20 +48,20 @@
           <tbody>
             <tr v-for="record in filteredRequests" :key="record.service_id">
               <td>
-                <p class="font-semibold text-slate-900">{{ record.phone_model }}</p>
-                <p class="text-xs text-slate-500">#{{ record.service_id }} · {{ formatDate(record.date) }}</p>
+                <p class="font-semibold text-slate-900 dark:text-slate-100">{{ record.phone_model }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">#{{ record.service_id }} · {{ formatDate(record.date) }}</p>
               </td>
               <td>
-                <p class="font-medium text-slate-800">{{ record.customer_name }}</p>
-                <p class="text-xs text-slate-500">{{ record.customer_email }}</p>
-                <p class="text-xs text-slate-500">{{ record.customer_phone }}</p>
+                <p class="font-medium text-slate-800 dark:text-slate-200">{{ record.customer_name }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ record.customer_email }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ record.customer_phone }}</p>
               </td>
-              <td class="font-medium text-slate-800">{{ record.shop_name }}</td>
-              <td class="max-w-[220px]"><p class="line-clamp-2 text-slate-600">{{ record.customer_problem }}</p></td>
+              <td class="font-medium text-slate-800 dark:text-slate-200">{{ record.shop_name }}</td>
+              <td class="max-w-[220px]"><p class="line-clamp-2 text-slate-600 dark:text-slate-400">{{ record.customer_problem }}</p></td>
               <td class="max-w-[220px]">
-                <p class="line-clamp-2" :class="record.shop_problem ? 'text-slate-600' : 'text-slate-400'">{{ record.shop_problem || 'Not yet' }}</p>
+                <p class="line-clamp-2" :class="record.shop_problem ? 'text-slate-600 dark:text-slate-400' : 'text-slate-400 dark:text-slate-500'">{{ record.shop_problem || 'Not yet' }}</p>
               </td>
-              <td class="font-semibold whitespace-nowrap text-slate-900">{{ formatMoney(record.cost) }}</td>
+              <td class="font-semibold whitespace-nowrap text-slate-900 dark:text-slate-100">{{ formatMoney(record.cost) }}</td>
               <td><StatusBadge :status="record.status" /></td>
             </tr>
           </tbody>

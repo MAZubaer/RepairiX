@@ -2,7 +2,7 @@
   <AppLayout title="Photos">
     <PageHeader title="Photos" subtitle="Show customers your shop and your work. Your first photo is the cover on your shop card.">
       <template #actions>
-        <span class="chip bg-white text-slate-700 ring-1 ring-slate-200">
+        <span class="chip bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-800">
           <ImageIcon class="size-3.5" />
           {{ items.length }} / {{ limits.max_photos }} photos
         </span>
@@ -15,22 +15,22 @@
         v-if="!uploading"
         class="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition"
         :class="[
-          dragOverZone ? 'border-brand-500 bg-brand-50' : 'border-slate-300 bg-slate-50/60 hover:border-brand-400 hover:bg-brand-50/40',
+          dragOverZone ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10' : 'border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/30 hover:border-brand-400 hover:bg-brand-50/40 dark:hover:bg-brand-500/10',
           remaining === 0 ? 'pointer-events-none opacity-60' : '',
         ]"
         @dragover.prevent="onZoneDragOver"
         @dragleave.prevent="dragOverZone = false"
         @drop.prevent="onZoneDrop"
       >
-        <span class="grid size-14 place-items-center rounded-2xl bg-white text-brand-600 shadow-soft ring-1 ring-slate-200">
+        <span class="grid size-14 place-items-center rounded-2xl bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-400 shadow-soft ring-1 ring-slate-200 dark:ring-slate-800">
           <ImagePlus class="size-7" />
         </span>
         <div>
-          <p class="font-semibold text-slate-900">
-            <template v-if="remaining > 0">Drag photos here or <span class="text-brand-700 underline underline-offset-2">browse</span></template>
+          <p class="font-semibold text-slate-900 dark:text-slate-100">
+            <template v-if="remaining > 0">Drag photos here or <span class="text-brand-700 dark:text-brand-300 underline underline-offset-2">browse</span></template>
             <template v-else>You've reached the {{ limits.max_photos }}-photo limit</template>
           </p>
-          <p class="mt-1 text-sm text-slate-500">
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
             JPG, PNG or WebP · up to {{ limits.max_file_mb }} MB each · {{ remaining }} more allowed
           </p>
         </div>
@@ -38,23 +38,23 @@
       </label>
 
       <!-- Upload in progress -->
-      <div v-else class="rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200/70">
+      <div v-else class="rounded-2xl bg-slate-50 dark:bg-slate-800/40 p-5 ring-1 ring-slate-200/70 dark:ring-slate-800">
         <div class="flex items-center justify-between gap-4">
-          <p class="flex items-center gap-2 text-sm font-semibold text-slate-800">
-            <LoaderCircle class="size-4 animate-spin text-brand-600" />
+          <p class="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+            <LoaderCircle class="size-4 animate-spin text-brand-600 dark:text-brand-400" />
             Uploading {{ pendingPreviews.length }} {{ pendingPreviews.length === 1 ? 'photo' : 'photos' }}…
           </p>
-          <span class="text-sm font-bold text-brand-700">{{ progress }}%</span>
+          <span class="text-sm font-bold text-brand-700 dark:text-brand-300">{{ progress }}%</span>
         </div>
-        <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+        <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <div class="h-full rounded-full bg-brand-600 transition-all duration-200" :style="{ width: `${progress}%` }" />
         </div>
         <div class="mt-4 flex gap-2 overflow-x-auto">
-          <img v-for="src in pendingPreviews" :key="src" :src="src" alt="" class="size-16 shrink-0 rounded-lg object-cover opacity-70 ring-1 ring-slate-200" />
+          <img v-for="src in pendingPreviews" :key="src" :src="src" alt="" class="size-16 shrink-0 rounded-lg object-cover opacity-70 ring-1 ring-slate-200 dark:ring-slate-800" />
         </div>
       </div>
 
-      <div v-if="uploadError" class="mt-4 flex items-start gap-3 rounded-xl bg-rose-50 p-3.5 text-sm text-rose-700 ring-1 ring-rose-200">
+      <div v-if="uploadError" class="mt-4 flex items-start gap-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 p-3.5 text-sm text-rose-700 dark:text-rose-300 ring-1 ring-rose-200 dark:ring-rose-500/30">
         <CircleAlert class="mt-0.5 size-4 shrink-0" />
         {{ uploadError }}
       </div>
@@ -63,11 +63,11 @@
     <!-- Gallery -->
     <section v-if="items.length" class="card p-4 sm:p-5">
       <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <p class="flex items-center gap-2 text-sm text-slate-500">
+        <p class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
           <Move class="size-4" />
           Drag photos to reorder. Changes save automatically.
         </p>
-        <span class="text-xs font-medium" :class="saving ? 'text-slate-500' : 'text-emerald-600'">
+        <span class="text-xs font-medium" :class="saving ? 'text-slate-500 dark:text-slate-400' : 'text-emerald-600 dark:text-emerald-400'">
           <template v-if="saving">Saving order…</template>
           <template v-else-if="savedAt">Order saved</template>
         </span>
@@ -78,7 +78,7 @@
           v-for="(photo, index) in items"
           :key="photo.image_id"
           draggable="true"
-          class="group relative aspect-[4/3] cursor-grab overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition active:cursor-grabbing"
+          class="group relative aspect-[4/3] cursor-grab overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-800 transition active:cursor-grabbing"
           :class="dragIndex === index ? 'scale-95 opacity-40 ring-2 ring-brand-500' : ''"
           @dragstart="onDragStart(index, $event)"
           @dragenter.prevent="onDragEnter(index)"

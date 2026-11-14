@@ -1,6 +1,6 @@
 <template>
   <Head :title="title" />
-  <div class="flex min-h-screen flex-col bg-slate-50">
+  <div class="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
     <AppNav />
     <main class="flex-1" :class="bare ? '' : 'py-8 sm:py-10'">
       <div v-if="!bare" class="container-page animate-slide-up">

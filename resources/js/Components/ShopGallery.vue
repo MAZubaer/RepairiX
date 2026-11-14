@@ -5,7 +5,7 @@
         v-for="(img, i) in images"
         :key="img.image_id || i"
         type="button"
-        class="group relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200"
+        class="group relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-800"
         :aria-label="`Open photo ${i + 1}`"
         @click="open = i"
       >

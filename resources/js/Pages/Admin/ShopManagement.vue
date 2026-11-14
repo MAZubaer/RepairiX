@@ -9,7 +9,7 @@
     </div>
 
     <div class="card overflow-hidden">
-      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-800 p-4 lg:flex-row lg:items-center lg:justify-between">
         <FilterTabs v-model="tab" :tabs="tabs" />
         <div class="lg:w-80">
           <SearchInput v-model="search" placeholder="Search name, email or location…" />
@@ -34,19 +34,19 @@
                 <div class="flex items-center gap-3">
                   <Avatar :name="shop.name" rounded />
                   <div class="min-w-0">
-                    <p class="font-semibold text-slate-900">{{ shop.name }}</p>
-                    <p class="flex items-center gap-1 text-xs text-slate-500"><MapPin class="size-3" />{{ shop.location }}</p>
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ shop.name }}</p>
+                    <p class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400"><MapPin class="size-3" />{{ shop.location }}</p>
                   </div>
                 </div>
               </td>
               <td>
-                <p class="text-slate-700">{{ shop.contact_email }}</p>
-                <p class="text-xs text-slate-500">{{ shop.contact_phone }}</p>
+                <p class="text-slate-700 dark:text-slate-300">{{ shop.contact_email }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ shop.contact_phone }}</p>
               </td>
               <td>
                 <span
                   class="chip ring-1 ring-inset"
-                  :class="shop.status === 'activated' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : 'bg-slate-100 text-slate-600 ring-slate-500/20'"
+                  :class="shop.status === 'activated' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 ring-emerald-600/20 dark:ring-emerald-400/25' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 ring-slate-500/20 dark:ring-slate-400/20'"
                 >
                   <span class="size-1.5 rounded-full" :class="shop.status === 'activated' ? 'bg-emerald-500' : 'bg-slate-400'" />
                   {{ shop.status === 'activated' ? 'Active' : 'Inactive' }}

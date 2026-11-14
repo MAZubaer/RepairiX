@@ -22,20 +22,20 @@
 
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
       <section class="card overflow-hidden lg:col-span-2">
-        <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 class="font-bold text-slate-900">Latest requests</h2>
-          <Link href="/shop/customers" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-6 py-4">
+          <h2 class="font-bold text-slate-900 dark:text-slate-100">Latest requests</h2>
+          <Link href="/shop/customers" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 dark:text-brand-300 hover:text-brand-800 dark:hover:text-brand-200">
             View all
             <ArrowRight class="size-4" />
           </Link>
         </div>
-        <ul v-if="recentRequests.length" class="divide-y divide-slate-100">
+        <ul v-if="recentRequests.length" class="divide-y divide-slate-100 dark:divide-slate-800">
           <li v-for="r in recentRequests" :key="r.service_id">
-            <Link href="/shop/customers" class="flex items-center gap-4 px-6 py-4 transition hover:bg-slate-50">
+            <Link href="/shop/customers" class="flex items-center gap-4 px-6 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/40">
               <Avatar :name="r.customer_name" />
               <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-semibold text-slate-800">{{ r.customer_name }}</p>
-                <p class="truncate text-sm text-slate-500">{{ r.phone_model }} · {{ formatDate(r.date) }}</p>
+                <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">{{ r.customer_name }}</p>
+                <p class="truncate text-sm text-slate-500 dark:text-slate-400">{{ r.phone_model }} · {{ formatDate(r.date) }}</p>
               </div>
               <StatusBadge :status="r.status" />
             </Link>
@@ -47,23 +47,23 @@
       <div class="space-y-6">
         <section class="card p-6">
           <div class="flex items-center justify-between">
-            <h2 class="font-bold text-slate-900">Subscription</h2>
-            <span class="chip bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 ring-inset">
+            <h2 class="font-bold text-slate-900 dark:text-slate-100">Subscription</h2>
+            <span class="chip bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-600/20 dark:ring-emerald-400/25 ring-inset">
               <span class="size-1.5 rounded-full bg-emerald-500" />
               Active
             </span>
           </div>
-          <p class="mt-4 text-sm text-slate-500">Plan</p>
-          <p class="font-semibold text-slate-900 capitalize">{{ subscription.plan || 'Custom' }}</p>
-          <p class="mt-3 text-sm text-slate-500">Renews / expires</p>
-          <p class="font-semibold text-slate-900">{{ formatDate(subscription.expiry_date) }}</p>
+          <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Plan</p>
+          <p class="font-semibold text-slate-900 dark:text-slate-100 capitalize">{{ subscription.plan || 'Custom' }}</p>
+          <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Renews / expires</p>
+          <p class="font-semibold text-slate-900 dark:text-slate-100">{{ formatDate(subscription.expiry_date) }}</p>
           <Link href="/shop/pricing" class="btn btn-secondary mt-5 w-full">Manage billing</Link>
         </section>
 
         <section class="card p-6">
-          <h2 class="font-bold text-slate-900">Services</h2>
-          <p v-if="shop.services_provided" class="mt-3 line-clamp-6 text-sm leading-relaxed whitespace-pre-line text-slate-600">{{ shop.services_provided }}</p>
-          <p v-else class="mt-3 text-sm text-slate-400">Tell customers what you repair. It helps them choose you.</p>
+          <h2 class="font-bold text-slate-900 dark:text-slate-100">Services</h2>
+          <p v-if="shop.services_provided" class="mt-3 line-clamp-6 text-sm leading-relaxed whitespace-pre-line text-slate-600 dark:text-slate-400">{{ shop.services_provided }}</p>
+          <p v-else class="mt-3 text-sm text-slate-400 dark:text-slate-500">Tell customers what you repair. It helps them choose you.</p>
           <Link v-if="!shop.services_provided" href="/shop/edit" class="btn btn-soft btn-sm mt-4">Add services</Link>
         </section>
       </div>
@@ -71,8 +71,8 @@
 
     <section class="card mt-6 p-6 sm:p-8">
       <div class="mb-5 flex items-center justify-between">
-        <h2 class="font-bold text-slate-900">Shop photos</h2>
-        <Link href="/shop/photos" class="text-sm font-semibold text-brand-700 hover:text-brand-800">Manage photos</Link>
+        <h2 class="font-bold text-slate-900 dark:text-slate-100">Shop photos</h2>
+        <Link href="/shop/photos" class="text-sm font-semibold text-brand-700 dark:text-brand-300 hover:text-brand-800 dark:hover:text-brand-200">Manage photos</Link>
       </div>
       <ShopGallery :images="visibleGallery" empty-text="Add photos of your shop and work so customers can see what to expect." />
     </section>

@@ -1,8 +1,8 @@
 <template>
   <AuthLayout title="Log in">
     <div class="mb-8">
-      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Welcome back</h1>
-      <p class="mt-2 text-slate-500">Log in to track repairs and manage your account.</p>
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Welcome back</h1>
+      <p class="mt-2 text-slate-500 dark:text-slate-400">Log in to track repairs and manage your account.</p>
     </div>
 
     <form class="space-y-5" novalidate @submit.prevent="submit">
@@ -34,7 +34,7 @@
           />
           <button
             type="button"
-            class="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 hover:text-slate-600"
+            class="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400"
             :aria-label="showPassword ? 'Hide password' : 'Show password'"
             @click="showPassword = !showPassword"
           >
@@ -50,8 +50,8 @@
       </button>
     </form>
 
-    <div class="mt-8 rounded-2xl bg-slate-50 p-5 text-sm ring-1 ring-slate-200/70">
-      <p class="font-semibold text-slate-800">New to RepairiX?</p>
+    <div class="mt-8 rounded-2xl bg-slate-50 dark:bg-slate-800/40 p-5 text-sm ring-1 ring-slate-200/70 dark:ring-slate-800">
+      <p class="font-semibold text-slate-800 dark:text-slate-200">New to RepairiX?</p>
       <div class="mt-3 grid gap-2 sm:grid-cols-2">
         <Link href="/register/customer" class="btn btn-secondary btn-sm">
           <Smartphone class="size-4" />
