@@ -55,6 +55,7 @@ class SharedPropsAndPagesTest extends TestCase
 
         $this->actingAs($customer->user)
             ->post("/customer/shops/{$shop->shop_id}/requests", [
+                'device_type' => 'phone',
                 'phone_model' => 'Pixel 8',
                 'phone_number' => '01700000000',
                 'phone_imei_number' => '356938035643809',

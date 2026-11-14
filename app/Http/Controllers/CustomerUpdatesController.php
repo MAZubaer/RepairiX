@@ -114,6 +114,7 @@ class CustomerUpdatesController extends Controller
             return [
                 'service_id' => $record->service_id,
                 'customer_phone' => $record->phone_number,
+                'device_type' => $record->device_type,
                 'phone_model' => $record->phone_model,
                 'contact' => $record->phone_number,
                 'phone_imei_number' => $record->phone_imei_number,

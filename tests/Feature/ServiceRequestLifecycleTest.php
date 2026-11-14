@@ -20,6 +20,7 @@ class ServiceRequestLifecycleTest extends TestCase
     {
         $this->actingAs($customer->user)
             ->post("/customer/shops/{$shop->shop_id}/requests", [
+                'device_type' => 'phone',
                 'phone_model' => 'Galaxy S23',
                 'phone_number' => '01711111111',
                 'phone_imei_number' => '356938035643809',
@@ -106,6 +107,7 @@ class ServiceRequestLifecycleTest extends TestCase
 
         $this->actingAs($customer->user)
             ->post("/customer/shops/{$shop->shop_id}/requests", [
+                'device_type' => 'phone',
                 'phone_model' => 'Galaxy S23',
                 'phone_number' => '01711111111',
                 'phone_imei_number' => '356938035643809',

@@ -1,8 +1,8 @@
 <template>
   <AuthLayout
     title="Create your account"
-    heading="Get your phone fixed by shops you can trust."
-    tagline="Compare repair shops, send a request in a minute, and follow every step until your phone is back."
+    heading="Get your devices fixed by shops you can trust."
+    tagline="Phone, laptop, tablet or accessory: compare repair shops, send a request in a minute, and follow every step until it's back."
   >
     <AccountTypeSwitch active="customer" class="mb-8" />
 
@@ -43,9 +43,9 @@
         </FormField>
       </div>
 
-      <FormField id="primary_device" label="Primary device" :icon="Smartphone" :error="errors.primary_device">
+      <FormField id="primary_device" label="Primary device" :icon="MonitorSmartphone" :error="errors.primary_device">
         <template #default="{ id, inputClass }">
-          <input :id="id" v-model="form.primary_device" name="primary_device" type="text" required :class="inputClass" placeholder="e.g. iPhone 13, Galaxy S23" />
+          <input :id="id" v-model="form.primary_device" name="primary_device" type="text" required :class="inputClass" placeholder="e.g. iPhone 13, MacBook Air, iPad" />
         </template>
       </FormField>
 
@@ -79,7 +79,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
-import { CircleAlert, LoaderCircle, Lock, Mail, MapPin, Phone, Smartphone, User } from 'lucide-vue-next'
+import { CircleAlert, LoaderCircle, Lock, Mail, MapPin, Phone, MonitorSmartphone, User } from 'lucide-vue-next'
 import AuthLayout from '../Layouts/AuthLayout.vue'
 import AccountTypeSwitch from '../Components/AccountTypeSwitch.vue'
 import FormField from '../Components/FormField.vue'

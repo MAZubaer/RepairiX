@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Support\DeviceType;
 use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
@@ -22,13 +23,31 @@ class Shop extends Model
         'description',
         'motto',
         'services_provided',
+        'device_types',
         'rating',
     ];
 
     protected $casts = [
         'expiry_date' => 'datetime',
         'current_period_end' => 'datetime',
+        'device_types' => 'array',
     ];
+
+    /** New shops repair every device type until they change it on their profile. */
+    protected $attributes = [
+        'device_types' => '["phone","laptop","tablet","accessory"]',
+    ];
+
+    /** Device types this shop repairs, in the standard order. */
+    public function deviceTypes(): array
+    {
+        return array_values(array_intersect(DeviceType::ALL, $this->device_types ?: DeviceType::ALL));
+    }
+
+    public function repairs(string $deviceType): bool
+    {
+        return in_array($deviceType, $this->deviceTypes(), true);
+    }
 
     public function user()
     {

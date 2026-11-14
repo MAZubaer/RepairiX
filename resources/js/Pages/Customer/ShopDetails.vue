@@ -50,10 +50,28 @@
           <CircleAlert class="mt-0.5 size-4 shrink-0" />
           {{ form.errors.server }}
         </div>
+        <fieldset>
+          <legend class="label">Device type</legend>
+          <div class="grid gap-2" :class="({ 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' })[shopDevices.length] || 'grid-cols-2 sm:grid-cols-4'">
+            <label
+              v-for="device in shopDevices"
+              :key="device.value"
+              class="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-sm font-semibold ring-1 transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500"
+              :class="form.device_type === device.value
+                ? 'bg-brand-50 text-brand-700 ring-brand-500 dark:bg-brand-500/15 dark:text-brand-200 dark:ring-brand-400'
+                : 'bg-white text-slate-600 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800/60 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800'"
+            >
+              <input v-model="form.device_type" type="radio" name="device_type" :value="device.value" class="sr-only" />
+              <component :is="device.icon" class="size-5" />
+              {{ device.label }}
+            </label>
+          </div>
+          <p v-if="form.errors.device_type" class="field-error">{{ form.errors.device_type }}</p>
+        </fieldset>
         <div class="grid gap-4 sm:grid-cols-2">
-          <FormField id="phone_model" label="Phone model" :icon="Smartphone" :error="form.errors.phone_model">
+          <FormField id="phone_model" :label="`${selectedDevice.label} model`" :icon="selectedDevice.icon" :error="form.errors.phone_model">
             <template #default="{ id, inputClass }">
-              <input :id="id" v-model="form.phone_model" type="text" required :class="inputClass" placeholder="e.g. iPhone 13 Pro" />
+              <input :id="id" v-model="form.phone_model" type="text" required :class="inputClass" :placeholder="selectedDevice.modelPlaceholder" />
             </template>
           </FormField>
           <FormField id="phone_number" label="Contact number" :icon="Phone" :error="form.errors.phone_number">
@@ -64,18 +82,18 @@
         </div>
         <FormField
           id="phone_imei_number"
-          label="IMEI number"
+          label="Serial / IMEI number (optional)"
           :icon="Hash"
           :error="form.errors.phone_imei_number"
-          hint="Dial *#06# on your phone to see it."
+          :hint="selectedDevice.serialHint"
         >
           <template #default="{ id, inputClass }">
-            <input :id="id" v-model="form.phone_imei_number" type="text" inputmode="numeric" required :class="inputClass" placeholder="15-digit IMEI" />
+            <input :id="id" v-model="form.phone_imei_number" type="text" :class="inputClass" :placeholder="form.device_type === 'phone' ? '15-digit IMEI' : 'Serial number'" />
           </template>
         </FormField>
         <FormField id="customer_problem" label="What's wrong?" :error="form.errors.customer_problem">
           <template #default="{ id, inputClass }">
-            <textarea :id="id" v-model="form.customer_problem" rows="4" required :class="inputClass" placeholder="Describe the issue, e.g. screen cracked after a drop, touch not working on the left side." />
+            <textarea :id="id" v-model="form.customer_problem" rows="4" required :class="inputClass" :placeholder="problemPlaceholder" />
           </template>
         </FormField>
       </form>
@@ -95,8 +113,9 @@
 import { computed, ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import {
-  ArrowLeft, CircleAlert, Hash, Image as ImageIcon, ListChecks, LoaderCircle, Phone, Send, Smartphone, Wrench,
+  ArrowLeft, CircleAlert, Hash, Image as ImageIcon, ListChecks, LoaderCircle, Phone, Send, Wrench,
 } from 'lucide-vue-next'
+import { deviceMeta, devicesFor } from '../../lib/devices'
 import AppLayout from '../../Layouts/AppLayout.vue'
 import FormField from '../../Components/FormField.vue'
 import Modal from '../../Components/Modal.vue'
@@ -111,7 +130,10 @@ const props = defineProps({
 
 const showModal = ref(false)
 
+const shopDevices = computed(() => devicesFor(props.shop.device_types))
+
 const form = useForm({
+  device_type: shopDevices.value[0]?.value || 'phone',
   phone_model: '',
   phone_number: '',
   phone_imei_number: '',
@@ -120,8 +142,18 @@ const form = useForm({
 
 const visibleGallery = computed(() => (Array.isArray(props.gallery) ? props.gallery : []).filter((i) => i && i.url))
 
+const selectedDevice = computed(() => deviceMeta(form.device_type))
+
+const PROBLEM_EXAMPLES = {
+  phone: 'e.g. screen cracked after a drop, touch not working on the left side.',
+  laptop: "e.g. laptop shuts down when it gets hot, fan is very loud, won't charge.",
+  tablet: 'e.g. battery drains overnight, charging port is loose.',
+  accessory: "e.g. left earbud won't charge, watch strap clip broken.",
+}
+const problemPlaceholder = computed(() => `Describe the issue, ${PROBLEM_EXAMPLES[form.device_type] || PROBLEM_EXAMPLES.phone}`)
+
 const howItWorks = [
-  'Send your phone model and the problem.',
+  'Pick your device, then describe the problem.',
   'The shop accepts and diagnoses it, and sets a price.',
   'Follow the repair live under “My repairs”.',
   'Accept delivery and rate the shop.',
@@ -131,7 +163,7 @@ function submitRequest() {
   form.post(`/customer/shops/${props.shop.shop_id}/requests`, {
     preserveScroll: true,
     onSuccess: () => {
-      form.reset()
+      form.reset('phone_model', 'phone_number', 'phone_imei_number', 'customer_problem')
       showModal.value = false
     },
   })

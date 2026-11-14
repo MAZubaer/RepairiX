@@ -5,7 +5,7 @@
       <div class="container-page relative py-20 text-center sm:py-24">
         <span class="eyebrow">About RepairiX</span>
         <h1 class="mx-auto mt-6 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
-          Making phone repair honest, simple and trackable.
+          Making device repair honest, simple and trackable.
         </h1>
         <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
           We connect people who need a repair with professional shops nearby, and give both sides one clear place to manage the job.
@@ -21,8 +21,8 @@
           </span>
           <h2 class="mt-6 text-2xl font-bold text-slate-900 dark:text-slate-100">Our mission</h2>
           <p class="mt-3 leading-relaxed text-slate-600 dark:text-slate-400">
-            To simplify repairing mobile phones by connecting you with verified, professional repair shops in your area,
-            with no guesswork about what's wrong or what it will cost.
+            To simplify repairing your digital devices (phones, laptops, tablets and accessories) by connecting you with
+            verified, professional repair shops in your area, with no guesswork about what's wrong or what it will cost.
           </p>
         </article>
         <article class="card p-8">
@@ -66,14 +66,14 @@
 <script setup>
 import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
-import { BadgeCheck, Heart, Smartphone, Target, Wrench, Zap } from 'lucide-vue-next'
+import { BadgeCheck, Heart, MonitorSmartphone, Target, Wrench, Zap } from 'lucide-vue-next'
 import AppLayout from '../Layouts/AppLayout.vue'
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user || null)
 
 const features = [
-  { icon: Smartphone, title: 'Mobile phones', text: 'Focused support for smartphone repair needs.' },
+  { icon: MonitorSmartphone, title: 'Every device', text: 'Phones, laptops, tablets and accessories, all in one place.' },
   { icon: Wrench, title: 'Expert repairs', text: 'Verified and skilled technicians.' },
   { icon: Zap, title: 'Fast service', text: 'Quick turnaround with live progress.' },
   { icon: BadgeCheck, title: 'Rated by customers', text: 'Every delivered repair can be reviewed.' },

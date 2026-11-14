@@ -35,7 +35,7 @@
               <Avatar :name="r.customer_name" />
               <div class="min-w-0 flex-1">
                 <p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-200">{{ r.customer_name }}</p>
-                <p class="truncate text-sm text-slate-500 dark:text-slate-400">{{ r.phone_model }} · {{ formatDate(r.date) }}</p>
+                <p class="truncate text-sm text-slate-500 dark:text-slate-400">{{ deviceMeta(r.device_type).label }} · {{ r.phone_model }} · {{ formatDate(r.date) }}</p>
               </div>
               <StatusBadge :status="r.status" />
             </Link>
@@ -91,6 +91,7 @@ import ShopProfileHeader from '../../Components/ShopProfileHeader.vue'
 import StatCard from '../../Components/StatCard.vue'
 import StatusBadge from '../../Components/StatusBadge.vue'
 import { formatDate, formatMoney } from '../../lib/format'
+import { deviceMeta } from '../../lib/devices'
 
 const props = defineProps({
   shop: { type: Object, required: true },

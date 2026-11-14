@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Support\DeviceType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateShopProfileRequest extends FormRequest
 {
@@ -31,6 +33,8 @@ class UpdateShopProfileRequest extends FormRequest
             'shop_address' => 'required|string|max:255',
             'motto' => 'nullable|string|max:255',
             'services_provided' => 'nullable|string',
+            'device_types' => 'required|array|min:1',
+            'device_types.*' => ['string', Rule::in(DeviceType::ALL)],
             // Photos are managed on their own page (ShopPhotoController).
             'logo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
         ];

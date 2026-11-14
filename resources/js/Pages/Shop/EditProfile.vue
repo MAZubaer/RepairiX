@@ -44,17 +44,37 @@
       <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
         <div>
           <h2 class="font-bold text-slate-900 dark:text-slate-100">About your shop</h2>
-          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">A short motto and the repairs you offer.</p>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">The devices you repair, a short motto and your services.</p>
         </div>
         <div class="space-y-5 lg:col-span-2">
+          <fieldset>
+            <legend class="label">Devices you repair</legend>
+            <p class="field-hint -mt-1 mb-3">Customers filter shops by device, and can only request repairs for the ones you pick.</p>
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <label
+                v-for="device in DEVICE_TYPES"
+                :key="device.value"
+                class="relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-sm font-semibold ring-1 transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500"
+                :class="form.device_types.includes(device.value)
+                  ? 'bg-brand-50 text-brand-700 ring-brand-500 dark:bg-brand-500/15 dark:text-brand-200 dark:ring-brand-400'
+                  : 'bg-white text-slate-500 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800/60 dark:text-slate-400 dark:ring-slate-700 dark:hover:bg-slate-800'"
+              >
+                <input v-model="form.device_types" type="checkbox" :value="device.value" class="sr-only" />
+                <Check v-if="form.device_types.includes(device.value)" class="absolute top-2 right-2 size-3.5" stroke-width="3" />
+                <component :is="device.icon" class="size-5" />
+                {{ device.plural }}
+              </label>
+            </div>
+            <p v-if="deviceError" class="field-error">{{ deviceError }}</p>
+          </fieldset>
           <FormField id="motto" label="Motto" optional :error="errors.motto">
             <template #default="{ id, inputClass }">
-              <input :id="id" v-model="form.motto" type="text" maxlength="255" :class="inputClass" placeholder="e.g. Fast, honest phone repairs" />
+              <input :id="id" v-model="form.motto" type="text" maxlength="255" :class="inputClass" placeholder="e.g. Fast, honest repairs for phones and laptops" />
             </template>
           </FormField>
           <FormField id="services_provided" label="Services" optional :error="errors.services_provided" hint="One service per line works well.">
             <template #default="{ id, inputClass }">
-              <textarea :id="id" v-model="form.services_provided" rows="6" :class="inputClass" placeholder="Screen replacement&#10;Battery replacement&#10;Charging port repair" />
+              <textarea :id="id" v-model="form.services_provided" rows="6" :class="inputClass" placeholder="Phone & tablet screen replacement&#10;Laptop keyboard and battery replacement&#10;Charging port repair&#10;Earbud and smartwatch battery repair" />
             </template>
           </FormField>
         </div>
@@ -114,7 +134,7 @@
           </p>
           <div class="flex w-full gap-2 sm:w-auto">
             <button type="button" class="btn btn-ghost flex-1 sm:flex-none" :disabled="!form.isDirty || form.processing" @click="resetForm">Discard</button>
-            <button type="submit" class="btn btn-primary flex-1 sm:flex-none" :disabled="form.processing">
+            <button type="submit" class="btn btn-primary flex-1 sm:flex-none" :disabled="form.processing || !form.device_types.length">
               <LoaderCircle v-if="form.processing" class="size-4 animate-spin" />
               Save changes
             </button>
@@ -139,7 +159,8 @@
 <script setup>
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { Link, router, useForm } from '@inertiajs/vue3'
-import { ArrowRight, Camera, Eye, LoaderCircle, Mail, MapPin, Phone, Store, Trash2, Upload } from 'lucide-vue-next'
+import { ArrowRight, Camera, Check, Eye, LoaderCircle, Mail, MapPin, Phone, Store, Trash2, Upload } from 'lucide-vue-next'
+import { DEVICE_TYPES } from '../../lib/devices'
 import AppLayout from '../../Layouts/AppLayout.vue'
 import Avatar from '../../Components/Avatar.vue'
 import ConfirmDialog from '../../Components/ConfirmDialog.vue'
@@ -159,10 +180,14 @@ const form = useForm({
   shop_address: props.profile.shop_address || '',
   motto: props.profile.motto || '',
   services_provided: props.profile.services_provided || '',
+  device_types: [...(props.profile.device_types || [])],
   logo: null,
 })
 
 const errors = computed(() => form.errors)
+const deviceError = computed(() => form.errors.device_types
+  || Object.entries(form.errors).find(([key]) => key.startsWith('device_types.'))?.[1]
+  || (form.device_types.length ? '' : 'Pick at least one device type.'))
 
 const logoPreview = ref(null)
 const confirmDelete = ref(null)
@@ -204,7 +229,7 @@ function submit() {
     onSuccess: () => {
       clearUploads()
       // The saved values become the new baseline for "unsaved changes".
-      form.defaults({ ...form.data(), logo: null })
+      form.defaults({ ...form.data(), device_types: [...form.device_types], logo: null })
     },
   })
 }

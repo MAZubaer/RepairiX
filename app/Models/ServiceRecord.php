@@ -14,6 +14,7 @@ class ServiceRecord extends Model
     protected $fillable = [
         'customer_id',
         'shop_id',
+        'device_type',
         'phone_number',
         'phone_model',
         'phone_imei_number',

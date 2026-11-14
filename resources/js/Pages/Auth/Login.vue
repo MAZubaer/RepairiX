@@ -54,7 +54,7 @@
       <p class="font-semibold text-slate-800 dark:text-slate-200">New to RepairiX?</p>
       <div class="mt-3 grid gap-2 sm:grid-cols-2">
         <Link href="/register/customer" class="btn btn-secondary btn-sm">
-          <Smartphone class="size-4" />
+          <MonitorSmartphone class="size-4" />
           I need a repair
         </Link>
         <Link href="/register/shop" class="btn btn-secondary btn-sm">
@@ -69,7 +69,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
-import { Eye, EyeOff, LoaderCircle, Lock, Mail, Smartphone, Store } from 'lucide-vue-next'
+import { Eye, EyeOff, LoaderCircle, Lock, Mail, MonitorSmartphone, Store } from 'lucide-vue-next'
 import AuthLayout from '../../Layouts/AuthLayout.vue'
 import FormField from '../../Components/FormField.vue'
 

@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
       <div class="flex min-w-0 items-start gap-4">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-slate-800 dark:ring-1 dark:ring-slate-700">
-          <Smartphone class="size-6" />
+          <component :is="device.icon" class="size-6" />
         </span>
         <div class="min-w-0">
           <div class="flex flex-wrap items-center gap-2">
@@ -11,6 +11,7 @@
             <StatusBadge :status="record.status" />
           </div>
           <p class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+            <span class="inline-flex items-center gap-1.5"><component :is="device.icon" class="size-4" />{{ device.label }}</span>
             <span class="inline-flex items-center gap-1.5"><Store class="size-4" />{{ record.shop_name }}</span>
             <span class="inline-flex items-center gap-1.5"><Calendar class="size-4" />{{ formatDate(record.date) }}</span>
             <span class="text-slate-400 dark:text-slate-500">#{{ record.service_id }}</span>
@@ -54,7 +55,7 @@
         <dd class="mt-1 text-sm text-slate-700 dark:text-slate-300">{{ record.contact || '—' }}</dd>
       </div>
       <div class="bg-white dark:bg-slate-900 px-5 py-4 sm:px-6">
-        <dt class="text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase">IMEI</dt>
+        <dt class="text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase">Serial / IMEI</dt>
         <dd class="mt-1 font-mono text-sm text-slate-700 dark:text-slate-300">{{ record.phone_imei_number || '—' }}</dd>
       </div>
     </dl>
@@ -63,7 +64,7 @@
 
     <!-- Actions -->
     <div v-if="actionable && record.status === 'sent from shop'" class="flex flex-col gap-3 border-t border-brand-100 dark:border-brand-500/20 bg-brand-50/60 dark:bg-brand-500/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <p class="text-sm font-medium text-brand-900 dark:text-brand-100">Got your phone back? Confirm delivery to finish the repair.</p>
+      <p class="text-sm font-medium text-brand-900 dark:text-brand-100">Got your {{ deviceNoun }} back? Confirm delivery to finish the repair.</p>
       <button type="button" class="btn btn-primary" :disabled="busy" @click="$emit('accept', record)">
         <PackageCheck class="size-4" />
         Confirm delivery
@@ -97,7 +98,8 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { Calendar, ChevronDown, PackageCheck, Pencil, Smartphone, Store } from 'lucide-vue-next'
+import { Calendar, ChevronDown, PackageCheck, Pencil, Store } from 'lucide-vue-next'
+import { deviceMeta } from '../lib/devices'
 import RepairProgress from './RepairProgress.vue'
 import StarRating from './StarRating.vue'
 import StatusBadge from './StatusBadge.vue'
@@ -122,15 +124,19 @@ watch(() => props.record.rating, (r) => {
 
 const needsAction = computed(() => props.actionable && (props.record.status === 'sent from shop' || (props.record.status === 'delivered' && !props.record.rating)))
 
+const device = computed(() => deviceMeta(props.record.device_type))
+const deviceNoun = computed(() => device.value.label.toLowerCase())
+
 const statusMessage = computed(() => {
   const shop = props.record.shop_name || 'The shop'
+  const noun = deviceNoun.value
   return {
     pending: `${shop} has received your request and will review it shortly.`,
     accepted: `${shop} accepted your request and will start the repair soon.`,
     rejected: 'You can send a request to another shop.',
-    'in progress': `${shop} is repairing your phone right now.`,
-    completed: 'The repair is finished. The shop will send your phone back soon.',
-    'sent from shop': 'Your phone is on its way back to you.',
+    'in progress': `${shop} is repairing your ${noun} right now.`,
+    completed: `The repair is finished. The shop will send your ${noun} back soon.`,
+    'sent from shop': `Your ${noun} is on its way back to you.`,
     delivered: props.record.rating ? 'Delivered and rated. Thanks for your feedback!' : 'Delivered. Please rate your experience.',
   }[props.record.status] || ''
 })

@@ -12,7 +12,7 @@
       <div class="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-800 p-4 lg:flex-row lg:items-center lg:justify-between">
         <FilterTabs v-model="tab" :tabs="tabs" />
         <div class="lg:w-80">
-          <SearchInput v-model="search" placeholder="Search name, phone or model…" />
+          <SearchInput v-model="search" placeholder="Search name, phone, device or serial…" />
         </div>
       </div>
 
@@ -41,8 +41,11 @@
                 </div>
               </td>
               <td>
-                <p class="font-medium text-slate-800 dark:text-slate-200">{{ record.phone_model }}</p>
-                <p class="font-mono text-xs text-slate-400 dark:text-slate-500">{{ record.phone_imei_number }}</p>
+                <p class="flex items-center gap-1.5 font-medium text-slate-800 dark:text-slate-200">
+                  <component :is="deviceMeta(record.device_type).icon" class="size-4 shrink-0 text-slate-400 dark:text-slate-500" :aria-label="deviceMeta(record.device_type).label" />
+                  {{ record.phone_model }}
+                </p>
+                <p v-if="record.phone_imei_number" class="font-mono text-xs text-slate-400 dark:text-slate-500">{{ record.phone_imei_number }}</p>
               </td>
               <td class="max-w-xs">
                 <p class="line-clamp-2 text-slate-600 dark:text-slate-400">{{ record.customer_problem }}</p>
@@ -129,7 +132,10 @@
         <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/40 p-4 ring-1 ring-slate-200/70 dark:ring-slate-800">
           <p class="text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase">Customer's description</p>
           <p class="mt-1 text-sm whitespace-pre-line text-slate-700 dark:text-slate-300">{{ selected.customer_problem }}</p>
-          <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">IMEI <span class="font-mono text-slate-700 dark:text-slate-300">{{ selected.phone_imei_number }}</span></p>
+          <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+            <span>Device <span class="font-semibold text-slate-700 dark:text-slate-300">{{ deviceMeta(selected.device_type).label }}</span></span>
+            <span>Serial / IMEI <span class="font-mono text-slate-700 dark:text-slate-300">{{ selected.phone_imei_number || 'Not given' }}</span></span>
+          </p>
         </div>
 
         <div v-if="selected.editable" class="grid gap-4 sm:grid-cols-[1fr_200px]">
@@ -205,6 +211,7 @@ import SearchInput from '../../Components/SearchInput.vue'
 import StatCard from '../../Components/StatCard.vue'
 import StatusBadge from '../../Components/StatusBadge.vue'
 import { formatDate, formatMoney } from '../../lib/format'
+import { deviceMeta } from '../../lib/devices'
 
 const props = defineProps({
   records: { type: Array, default: () => [] },

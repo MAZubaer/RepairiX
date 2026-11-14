@@ -10,15 +10,15 @@
         <div class="animate-slide-up">
           <span class="eyebrow">
             <Sparkles class="size-3.5" />
-            Phone repair, simplified
+            Device repair, simplified
           </span>
           <h1 class="mt-6 text-4xl leading-[1.08] font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-6xl">
-            Get your phone fixed by shops
+            Get your devices fixed by shops
             <span class="bg-gradient-to-r from-brand-600 to-sky-500 bg-clip-text dark:from-brand-400 dark:to-sky-400 text-transparent">you can trust.</span>
           </h1>
           <p class="mt-6 max-w-xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            RepairiX connects you with verified repair shops. Send a request in a minute, see the diagnosis and price,
-            and follow your repair step by step until it's back in your hands.
+            Phones, laptops, tablets and accessories. RepairiX connects you with verified repair shops. Send a request in
+            a minute, see the diagnosis and price, and follow your repair step by step until it's back in your hands.
           </p>
 
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -55,11 +55,11 @@
             <div class="flex items-start justify-between gap-4">
               <div class="flex items-center gap-3">
                 <span class="grid size-12 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-slate-800 dark:ring-1 dark:ring-slate-700">
-                  <Smartphone class="size-6" />
+                  <Laptop class="size-6" />
                 </span>
                 <div>
-                  <p class="font-bold text-slate-900 dark:text-slate-100">iPhone 13 Pro</p>
-                  <p class="text-sm text-slate-500 dark:text-slate-400">Cracked screen · Fix It Hub</p>
+                  <p class="font-bold text-slate-900 dark:text-slate-100">MacBook Air M1</p>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">Won't charge · Fix It Hub</p>
                 </div>
               </div>
               <StatusBadge status="in progress" />
@@ -84,11 +84,11 @@
             <div class="mt-7 grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 dark:bg-slate-800/40 p-4 text-sm">
               <div>
                 <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Diagnosis</p>
-                <p class="mt-0.5 font-semibold text-slate-800 dark:text-slate-200">OLED panel replacement</p>
+                <p class="mt-0.5 font-semibold text-slate-800 dark:text-slate-200">Charging board replacement</p>
               </div>
               <div>
                 <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Quoted price</p>
-                <p class="mt-0.5 font-semibold text-slate-800 dark:text-slate-200">৳8,500</p>
+                <p class="mt-0.5 font-semibold text-slate-800 dark:text-slate-200">৳6,500</p>
               </div>
             </div>
           </div>
@@ -106,12 +106,31 @@
       </div>
     </section>
 
+    <!-- What we fix -->
+    <section class="pt-20 sm:pt-24">
+      <div class="container-page">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="text-sm font-semibold text-brand-600 dark:text-brand-400">What we fix</p>
+          <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">One place for every device you own</h2>
+        </div>
+        <div class="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+          <div v-for="device in DEVICE_TYPES" :key="device.value" class="card card-hover p-6">
+            <span class="grid size-12 place-items-center rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400">
+              <component :is="device.icon" class="size-6" />
+            </span>
+            <h3 class="mt-5 text-lg font-bold text-slate-900 dark:text-slate-100">{{ device.plural }}</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ device.examples }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- How it works -->
     <section class="py-20 sm:py-24">
       <div class="container-page">
         <div class="mx-auto max-w-2xl text-center">
           <p class="text-sm font-semibold text-brand-600 dark:text-brand-400">How it works</p>
-          <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">From cracked to fixed in three steps</h2>
+          <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">From broken to fixed in three steps</h2>
         </div>
 
         <div class="mt-14 grid gap-6 md:grid-cols-3">
@@ -120,7 +139,7 @@
               <span class="grid size-12 place-items-center rounded-2xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400">
                 <component :is="step.icon" class="size-6" />
               </span>
-              <span class="text-5xl font-extrabold text-slate-100">0{{ i + 1 }}</span>
+              <span class="text-5xl font-extrabold text-slate-100 dark:text-slate-800">0{{ i + 1 }}</span>
             </div>
             <h3 class="mt-6 text-lg font-bold text-slate-900 dark:text-slate-100">{{ step.title }}</h3>
             <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">{{ step.text }}</p>
@@ -164,11 +183,12 @@
 import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import {
-  ArrowRight, BellRing, Check, CircleCheck, ClipboardList, Mail, Search, Send, Smartphone,
+  ArrowRight, BellRing, Check, CircleCheck, ClipboardList, Laptop, Mail, Search, Send,
   Sparkles, Star, Store, Truck,
 } from 'lucide-vue-next'
 import AppLayout from '../Layouts/AppLayout.vue'
 import StatusBadge from '../Components/StatusBadge.vue'
+import { DEVICE_TYPES } from '../lib/devices'
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user || null)
@@ -185,7 +205,7 @@ const previewSteps = [
 
 const steps = [
   { icon: Search, title: 'Find a shop', text: 'Browse active repair shops, compare ratings and look through their work.' },
-  { icon: Send, title: 'Send a request', text: 'Tell the shop your phone model and what is wrong. It takes about a minute.' },
+  { icon: Send, title: 'Send a request', text: 'Pick your device, tell the shop the model and what is wrong. It takes about a minute.' },
   { icon: Truck, title: 'Track to delivery', text: 'See the diagnosis and price, follow each step, then accept delivery and rate the shop.' },
 ]
 

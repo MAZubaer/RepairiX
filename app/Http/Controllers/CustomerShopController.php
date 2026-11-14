@@ -6,6 +6,7 @@ use App\Http\Requests\StoreServiceRecordRequest;
 use App\Models\Customer;
 use App\Models\ServiceRecord;
 use App\Models\Shop;
+use App\Support\DeviceType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -41,6 +42,7 @@ class CustomerShopController extends Controller
                 'address' => $shop->user?->location ?? 'Shop Address',
                 'rating' => (float) ($shop->rating ?? 0),
                 'services_provided' => $shop->services_provided,
+                'device_types' => $shop->deviceTypes(),
             ],
             'logo' => $shop->logoImage ? [
                 'image_id' => $shop->logoImage->image_id,
@@ -76,13 +78,20 @@ class CustomerShopController extends Controller
 
         $validated = $request->validated();
 
+        if (! $shop->repairs($validated['device_type'])) {
+            return back()->withErrors([
+                'device_type' => 'This shop doesn\'t repair '.DeviceType::PLURAL_LABELS[$validated['device_type']].'.',
+            ]);
+        }
+
         DB::transaction(function () use ($validated, $customer, $shop) {
             ServiceRecord::create([
                 'customer_id' => $customer->customer_id,
                 'shop_id' => $shop->shop_id,
+                'device_type' => $validated['device_type'],
                 'phone_number' => $validated['phone_number'],
                 'phone_model' => $validated['phone_model'],
-                'phone_imei_number' => $validated['phone_imei_number'],
+                'phone_imei_number' => $validated['phone_imei_number'] ?? null,
                 'customer_problem' => $validated['customer_problem'],
                 'shop_problem' => null,
                 'status' => 'pending',

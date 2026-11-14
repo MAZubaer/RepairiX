@@ -18,6 +18,7 @@
               <StarRating v-if="Number(shop.rating) > 0" :model-value="Number(shop.rating)" show-value />
               <span v-else class="chip bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">No ratings yet</span>
             </div>
+            <DeviceChips v-if="shop.device_types?.length" :types="shop.device_types" class="mt-3" />
           </div>
         </div>
         <div v-if="$slots.actions" class="flex shrink-0 gap-2 pb-1">
@@ -31,6 +32,7 @@
 <script setup>
 import { MapPin } from 'lucide-vue-next'
 import Avatar from './Avatar.vue'
+import DeviceChips from './DeviceChips.vue'
 import StarRating from './StarRating.vue'
 
 defineProps({

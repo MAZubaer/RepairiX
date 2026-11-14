@@ -135,6 +135,7 @@ class ShopPhotoTest extends TestCase
             'email' => $shop->user->email,
             'phone' => '01800000000',
             'shop_address' => 'Dhaka',
+            'device_types' => ['phone', 'laptop'],
         ];
 
         $this->actingAs($shop->user)->post('/shop/edit', $profile + ['logo' => $this->png('logo1.png')]);

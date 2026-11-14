@@ -1,6 +1,6 @@
 <template>
   <AppLayout title="My repairs">
-    <PageHeader title="My repairs" subtitle="Follow every request from the moment you send it until your phone is back.">
+    <PageHeader title="My repairs" subtitle="Follow every request from the moment you send it until your device is back.">
       <template #actions>
         <Link href="/dashboard/customer" class="btn btn-primary">
           <Plus class="size-4" />

@@ -54,12 +54,12 @@ import ThemeToggle from '../Components/ThemeToggle.vue'
 
 defineProps({
   title: { type: String, default: '' },
-  heading: { type: String, default: 'Phone repair, without the guesswork.' },
+  heading: { type: String, default: 'Device repair, without the guesswork.' },
   tagline: { type: String, default: 'Find trusted shops, follow every step of your repair, and pay a clear price.' },
   points: {
     type: Array,
     default: () => [
-      'Browse verified repair shops near you',
+      'Repair shops for phones, laptops, tablets and accessories',
       'Track your repair live, from request to delivery',
       'Transparent diagnosis and pricing up front',
     ],

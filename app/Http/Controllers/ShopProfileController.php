@@ -35,6 +35,7 @@ class ShopProfileController extends Controller
                 'shop_address' => $user->location,
                 'motto' => $shop->motto,
                 'services_provided' => $shop->services_provided,
+                'device_types' => $shop->deviceTypes(),
             ],
             'logo' => $logo ? [
                 'image_id' => $logo->image_id,
@@ -95,6 +96,7 @@ class ShopProfileController extends Controller
             $shop->update([
                 'motto' => $validated['motto'] ?? null,
                 'services_provided' => $validated['services_provided'] ?? null,
+                'device_types' => array_values(array_unique($validated['device_types'])),
                 // Keep previous description behavior aligned with address.
                 'description' => $validated['shop_address'],
             ]);

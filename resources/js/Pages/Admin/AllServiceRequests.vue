@@ -48,7 +48,10 @@
           <tbody>
             <tr v-for="record in filteredRequests" :key="record.service_id">
               <td>
-                <p class="font-semibold text-slate-900 dark:text-slate-100">{{ record.phone_model }}</p>
+                <p class="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-slate-100">
+                  <component :is="deviceMeta(record.device_type).icon" class="size-4 shrink-0 text-slate-400 dark:text-slate-500" :aria-label="deviceMeta(record.device_type).label" />
+                  {{ record.phone_model }}
+                </p>
                 <p class="text-xs text-slate-500 dark:text-slate-400">#{{ record.service_id }} · {{ formatDate(record.date) }}</p>
               </td>
               <td>
@@ -81,6 +84,7 @@ import PageHeader from '../../Components/PageHeader.vue'
 import SearchInput from '../../Components/SearchInput.vue'
 import StatusBadge from '../../Components/StatusBadge.vue'
 import { formatDate, formatMoney } from '../../lib/format'
+import { deviceMeta } from '../../lib/devices'
 import { STATUS } from '../../lib/status'
 
 const props = defineProps({
@@ -120,7 +124,7 @@ const filteredRequests = computed(() => {
   const q = search.value.trim().toLowerCase()
   return props.requests.filter((record) => {
     if (statusFilter.value !== 'all' && record.status !== statusFilter.value) return false
-    return !q || [record.customer_name, record.customer_email, record.shop_name, record.phone_model, record.status]
+    return !q || [record.customer_name, record.customer_email, record.shop_name, record.phone_model, deviceMeta(record.device_type).label, record.status]
       .some((v) => String(v || '').toLowerCase().includes(q))
   })
 })

@@ -60,6 +60,7 @@ class ShopDashboardController extends Controller
             'recentRequests' => $recent->map(fn (ServiceRecord $r) => [
                 'service_id' => $r->service_id,
                 'customer_name' => $r->customer?->user?->name ?? 'Customer',
+                'device_type' => $r->device_type,
                 'phone_model' => $r->phone_model,
                 'status' => $r->status,
                 'date' => $r->created_at?->timezone(config('app.timezone'))->format('Y-m-d'),
@@ -70,6 +71,7 @@ class ShopDashboardController extends Controller
                 'address' => $user->location,
                 'rating' => (float) $shop->rating,
                 'services_provided' => $shop->services_provided,
+                'device_types' => $shop->deviceTypes(),
             ],
             'logo' => $logo ? [
                 'image_id' => $logo->image_id,

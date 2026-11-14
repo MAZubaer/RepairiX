@@ -27,6 +27,7 @@ class ServiceRequestController extends Controller
                 'customer_email' => $record->customer?->user?->email,
                 'customer_phone' => $record->phone_number ?: ($record->customer?->user?->phone ?? ''),
                 'shop_name' => $record->shop?->user?->name ?? 'Shop',
+                'device_type' => $record->device_type,
                 'phone_model' => $record->phone_model,
                 'customer_problem' => $record->customer_problem,
                 'shop_problem' => $record->shop_problem,
