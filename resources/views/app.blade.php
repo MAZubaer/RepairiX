@@ -11,18 +11,5 @@
   </head>
   <body>
     @inertia
-
-    <script>
-      (function(){
-        try{
-          var s = document.querySelector('script[type="application/json"]');
-          var appEl = document.getElementById('app');
-          if(s && appEl){
-            var txt = (s.textContent || s.innerText || '').trim();
-            if(txt) appEl.dataset.page = txt;
-          }
-        }catch(e){/* no-op */}
-      })();
-    </script>
   </body>
 </html>

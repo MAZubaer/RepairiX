@@ -71,7 +71,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
+import { router } from '@inertiajs/vue3'
 import AdminNavbar from '../../Components/AdminNavbar.vue'
 
 const props = defineProps({
@@ -99,7 +99,7 @@ function deleteCustomer(customer) {
   const ok = confirm(`Delete ${customer.name}? This will remove customer data from database.`)
   if (!ok) return
 
-  Inertia.delete(`/admin/customers/${customer.customer_id}`, { preserveScroll: true })
+  router.delete(`/admin/customers/${customer.customer_id}`, { preserveScroll: true })
 }
 </script>
 

@@ -15,39 +15,39 @@
             <div>
               <label class="block text-sm font-semibold mb-1">Shop Name</label>
               <input v-model="form.shop_name" type="text" class="form-input" required />
-              <div v-if="errors.shop_name" class="text-red-500 text-sm mt-1">{{ errors.shop_name[0] }}</div>
+              <div v-if="errors.shop_name" class="text-red-500 text-sm mt-1">{{ errors.shop_name }}</div>
             </div>
 
             <div>
               <label class="block text-sm font-semibold mb-1">Business Email</label>
               <input v-model="form.email" type="email" class="form-input form-input-readonly" readonly required />
               <p class="text-xs text-slate-500 mt-1">You cannot change your email.</p>
-              <div v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email[0] }}</div>
+              <div v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</div>
             </div>
 
             <div>
               <label class="block text-sm font-semibold mb-1">Phone Number</label>
               <input v-model="form.phone" type="text" class="form-input" required />
-              <div v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone[0] }}</div>
+              <div v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</div>
             </div>
 
             <div>
               <label class="block text-sm font-semibold mb-1">Shop Address</label>
               <input v-model="form.shop_address" type="text" class="form-input" required />
-              <div v-if="errors.shop_address" class="text-red-500 text-sm mt-1">{{ errors.shop_address[0] }}</div>
+              <div v-if="errors.shop_address" class="text-red-500 text-sm mt-1">{{ errors.shop_address }}</div>
             </div>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Shop Motto</label>
             <input v-model="form.motto" type="text" class="form-input" placeholder="Enter shop motto" />
-            <div v-if="errors.motto" class="text-red-500 text-sm mt-1">{{ errors.motto[0] }}</div>
+            <div v-if="errors.motto" class="text-red-500 text-sm mt-1">{{ errors.motto }}</div>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Services Provided</label>
             <textarea v-model="form.services_provided" rows="5" class="form-input" placeholder="Describe services offered"></textarea>
-            <div v-if="errors.services_provided" class="text-red-500 text-sm mt-1">{{ errors.services_provided[0] }}</div>
+            <div v-if="errors.services_provided" class="text-red-500 text-sm mt-1">{{ errors.services_provided }}</div>
           </div>
 
           <div class="rounded-md border border-dashed border-gray-300 p-4">
@@ -59,7 +59,7 @@
               </div>
             </div>
             <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" @change="onLogoChange" class="block w-full text-sm" />
-            <div v-if="errors.logo" class="text-red-500 text-sm mt-1">{{ errors.logo[0] }}</div>
+            <div v-if="errors.logo" class="text-red-500 text-sm mt-1">{{ errors.logo }}</div>
           </div>
 
           <div class="rounded-md border border-dashed border-gray-300 p-4">
@@ -77,8 +77,8 @@
               </div>
             </div>
             <input type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp" @change="onGalleryChange" class="block w-full text-sm" />
-            <div v-if="errors.gallery_images" class="text-red-500 text-sm mt-1">{{ errors.gallery_images[0] }}</div>
-            <div v-if="errors['gallery_images.0']" class="text-red-500 text-sm mt-1">{{ errors['gallery_images.0'][0] }}</div>
+            <div v-if="errors.gallery_images" class="text-red-500 text-sm mt-1">{{ errors.gallery_images }}</div>
+            <div v-if="errors['gallery_images.0']" class="text-red-500 text-sm mt-1">{{ errors['gallery_images.0'] }}</div>
           </div>
 
           <div class="flex gap-3">
@@ -93,8 +93,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import { useForm, usePage } from '@inertiajs/inertia-vue3'
+import { router, useForm, usePage } from '@inertiajs/vue3'
 import ShopNavbar from '../../Components/ShopNavbar.vue'
 
 const props = defineProps({
@@ -104,7 +103,7 @@ const props = defineProps({
 })
 
 const page = usePage()
-const errors = computed(() => page.props.value.errors || {})
+const errors = computed(() => page.props.errors || {})
 const successMessage = ref('')
 
 const form = useForm({
@@ -152,7 +151,7 @@ function deleteLogo() {
   }
 
   successMessage.value = ''
-  Inertia.delete(`/shop/images/${props.logo.image_id}`, {
+  router.delete(`/shop/images/${props.logo.image_id}`, {
     preserveScroll: true,
     onSuccess: () => {
       successMessage.value = 'Logo deleted successfully.'
@@ -170,7 +169,7 @@ function deleteGalleryImage(imageId) {
   }
 
   successMessage.value = ''
-  Inertia.delete(`/shop/images/${imageId}`, {
+  router.delete(`/shop/images/${imageId}`, {
     preserveScroll: true,
     onSuccess: () => {
       successMessage.value = 'Shop image deleted successfully.'

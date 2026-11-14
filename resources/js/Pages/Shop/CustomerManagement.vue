@@ -83,35 +83,41 @@
                   <td class="px-4 py-4 text-base whitespace-pre-line">{{ record.customer_problem }}</td>
 
                   <td class="px-4 py-4 w-[230px]">
-                    <textarea
-                      v-model="problemDrafts[record.service_id]"
-                      rows="2"
-                      class="form-input"
-                      placeholder="Enter identified problem..."
-                    ></textarea>
-                    <button
-                      type="button"
-                      class="btn-update mt-2 w-full"
-                      @click="submitProblem(record)"
-                    >
-                      Update
-                    </button>
+                    <template v-if="record.editable">
+                      <textarea
+                        v-model="problemDrafts[record.service_id]"
+                        rows="2"
+                        class="form-input"
+                        placeholder="Enter identified problem..."
+                      ></textarea>
+                      <button
+                        type="button"
+                        class="btn-update mt-2 w-full"
+                        @click="submitProblem(record)"
+                      >
+                        Update
+                      </button>
+                    </template>
+                    <p v-else class="text-base whitespace-pre-line">{{ record.shop_problem || 'Not provided' }}</p>
                   </td>
 
                   <td class="px-4 py-4 w-[210px]">
-                    <input
-                      v-model="costDrafts[record.service_id]"
-                      type="text"
-                      class="form-input"
-                      placeholder="Enter cost..."
-                    />
-                    <button
-                      type="button"
-                      class="btn-update mt-2 w-full"
-                      @click="submitCost(record)"
-                    >
-                      Update
-                    </button>
+                    <template v-if="record.editable">
+                      <input
+                        v-model="costDrafts[record.service_id]"
+                        type="text"
+                        class="form-input"
+                        placeholder="Enter cost..."
+                      />
+                      <button
+                        type="button"
+                        class="btn-update mt-2 w-full"
+                        @click="submitCost(record)"
+                      >
+                        Update
+                      </button>
+                    </template>
+                    <p v-else class="text-lg">{{ record.repair_cost === null ? 'Not set' : `৳${record.repair_cost}` }}</p>
                   </td>
 
                   <td class="px-4 py-4 text-lg">{{ record.date }}</td>
@@ -147,7 +153,7 @@
           </div>
         </section>
 
-        <p v-if="errors.status" class="mt-3 text-red-600 text-sm">{{ errors.status[0] }}</p>
+        <p v-if="errors.status" class="mt-3 text-red-600 text-sm">{{ errors.status }}</p>
       </div>
     </main>
 
@@ -157,8 +163,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import { usePage } from '@inertiajs/inertia-vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import ShopNavbar from '../../Components/ShopNavbar.vue'
 
 const props = defineProps({
@@ -166,7 +171,7 @@ const props = defineProps({
 })
 
 const page = usePage()
-const errors = computed(() => page.props.value.errors || {})
+const errors = computed(() => page.props.errors || {})
 
 const searchPhone = ref('')
 const problemDrafts = reactive({})
@@ -202,7 +207,7 @@ const completedCount = computed(() =>
 )
 
 function submitProblem(record) {
-  Inertia.post(
+  router.post(
     `/shop/customers/${record.service_id}/problem`,
     { shop_problem: (problemDrafts[record.service_id] || '').trim() },
     { preserveScroll: true }
@@ -210,7 +215,7 @@ function submitProblem(record) {
 }
 
 function submitCost(record) {
-  Inertia.post(
+  router.post(
     `/shop/customers/${record.service_id}/cost`,
     { repair_cost: String(costDrafts[record.service_id] || '').trim() },
     { preserveScroll: true }
@@ -218,7 +223,7 @@ function submitCost(record) {
 }
 
 function submitStatusAction(record, action) {
-  Inertia.post(
+  router.post(
     `/shop/customers/${record.service_id}/status`,
     { action },
     { preserveScroll: true }

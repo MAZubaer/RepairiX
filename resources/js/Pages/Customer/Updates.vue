@@ -107,8 +107,8 @@
           </div>
         </section>
 
-        <p v-if="errors.status" class="mt-3 text-red-600 text-sm">{{ errors.status[0] }}</p>
-        <p v-if="errors.rating" class="mt-2 text-red-600 text-sm">{{ errors.rating[0] }}</p>
+        <p v-if="errors.status" class="mt-3 text-red-600 text-sm">{{ errors.status }}</p>
+        <p v-if="errors.rating" class="mt-2 text-red-600 text-sm">{{ errors.rating }}</p>
       </div>
     </main>
 
@@ -118,8 +118,7 @@
 
 <script setup>
 import { computed, reactive, watch } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import { usePage } from '@inertiajs/inertia-vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import CustomerNavbar from '../../Components/CustomerNavbar.vue'
 
 const props = defineProps({
@@ -127,7 +126,7 @@ const props = defineProps({
 })
 
 const page = usePage()
-const errors = computed(() => page.props.value.errors || {})
+const errors = computed(() => page.props.errors || {})
 const ratingDrafts = reactive({})
 
 watch(
@@ -142,11 +141,11 @@ watch(
 )
 
 function acceptDelivery(record) {
-  Inertia.post(`/customer/updates/${record.service_id}/accept`, {}, { preserveScroll: true })
+  router.post(`/customer/updates/${record.service_id}/accept`, {}, { preserveScroll: true })
 }
 
 function submitRating(record) {
-  Inertia.post(
+  router.post(
     `/customer/updates/${record.service_id}/rating`,
     { rating: Number(ratingDrafts[record.service_id] || 0) },
     { preserveScroll: true }

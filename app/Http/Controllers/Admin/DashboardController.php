@@ -17,7 +17,8 @@ class DashboardController extends Controller
         $totalCustomers = User::where('role', 'customer')->count();
         $totalRepairsCompleted = ServiceRecord::whereIn('status', ['completed', 'sent from shop', 'delivered'])->count();
 
-        // Payment table does not exist in current schema, so revenue is derived from completed repair payments.
+        // Sum of repair costs on finished jobs (money paid to shops), shown as "Total Repair Value".
+        // Subscription income lives in Stripe; there is no payments table to sum it from.
         $totalRevenue = ServiceRecord::whereIn('status', ['completed', 'sent from shop', 'delivered'])
             ->whereNotNull('repair_cost')
             ->sum('repair_cost');

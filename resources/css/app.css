@@ -10,18 +10,18 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-:root{
+/*
+ * Brand colors. Declaring them in @theme makes Tailwind generate utilities such as
+ * text-dark, bg-background and bg-primary. "static" always emits the CSS variables,
+ * because the components' scoped styles also read them via var(--color-*).
+ */
+@theme static {
     --color-primary: #14B8A6;
     --color-dark: #0F172A;
     --color-accent: #2DD4BF;
     --color-warning: #F59E0B;
     --color-background: #F1F5F9;
 }
-
-/* Example utility helpers using the variables */
-.bg-app{ background-color: var(--color-background); }
-.text-primary{ color: var(--color-primary); }
-.bg-primary{ background-color: var(--color-primary); }
 
 /* Button styles */
 .btn-primary{

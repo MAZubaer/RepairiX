@@ -19,12 +19,12 @@
 </template>
 
 <script setup>
-import { Inertia } from '@inertiajs/inertia'
+import { router } from '@inertiajs/vue3'
 
 const logo = '/images/repairix_short.png'
 
 function logout() {
-  Inertia.post('/logout')
+  router.post('/logout')
 }
 </script>
 

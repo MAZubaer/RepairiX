@@ -242,12 +242,19 @@ class ShopBillingController extends Controller
         $stripeStatus = (string) ($subscription->status ?? '');
         $isActive = in_array($stripeStatus, ['active', 'trialing'], true);
 
-        $currentPeriodEnd = null;
-        if (isset($subscription->current_period_end) && is_numeric($subscription->current_period_end)) {
-            $currentPeriodEnd = Carbon::createFromTimestamp((int) $subscription->current_period_end);
-        }
+        $firstItem = $subscription->items->data[0] ?? null;
 
-        $priceId = $subscription->items->data[0]->price->id ?? null;
+        // Since Stripe API 2025-03-31 the billing period lives on each subscription item,
+        // not on the subscription. Fall back to the legacy field for older API versions.
+        $periodEndTimestamp = $firstItem->current_period_end ?? $subscription->current_period_end ?? null;
+
+        // createFromTimestamp() defaults to UTC; datetime columns are stored and read back in the
+        // app timezone, so convert first or the expiry shifts by the UTC offset (6h for Dhaka).
+        $currentPeriodEnd = is_numeric($periodEndTimestamp)
+            ? Carbon::createFromTimestamp((int) $periodEndTimestamp, config('app.timezone'))
+            : null;
+
+        $priceId = $firstItem->price->id ?? null;
         $plan = null;
 
         if ($priceId && $priceId === config('services.stripe.monthly_price_id')) {

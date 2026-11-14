@@ -16,6 +16,9 @@ use Throwable;
 
 class ShopCustomerManagementController extends Controller
 {
+    /** Statuses in which the shop may still change the diagnosis and cost. */
+    private const EDITABLE_STATUSES = ['pending', 'accepted', 'in progress'];
+
     public function show(Request $request)
     {
         $user = $request->user();
@@ -54,6 +57,7 @@ class ShopCustomerManagementController extends Controller
                     'shop_problem' => $record->shop_problem,
                     'repair_cost' => $record->repair_cost,
                     'status' => $record->status,
+                    'editable' => in_array($record->status, self::EDITABLE_STATUSES, true),
                     'date' => $record->created_at?->timezone(config('app.timezone'))->format('Y-m-d'),
                 ];
             })->values(),
@@ -63,6 +67,10 @@ class ShopCustomerManagementController extends Controller
     public function updateProblem(Request $request, ServiceRecord $serviceRecord)
     {
         $this->assertShopOwnsRecord($request, $serviceRecord);
+
+        if ($response = $this->rejectIfNotEditable($serviceRecord)) {
+            return $response;
+        }
 
         $validated = $request->validate([
             'shop_problem' => ['required', 'string', 'max:5000'],
@@ -77,6 +85,10 @@ class ShopCustomerManagementController extends Controller
     public function updateCost(Request $request, ServiceRecord $serviceRecord)
     {
         $this->assertShopOwnsRecord($request, $serviceRecord);
+
+        if ($response = $this->rejectIfNotEditable($serviceRecord)) {
+            return $response;
+        }
 
         $validated = $request->validate([
             'repair_cost' => ['required', 'numeric', 'min:0', 'max:9999999.99'],
@@ -133,6 +145,17 @@ class ShopCustomerManagementController extends Controller
         if (! $shop || (int) $serviceRecord->shop_id !== (int) $shop->shop_id) {
             abort(403);
         }
+    }
+
+    private function rejectIfNotEditable(ServiceRecord $serviceRecord)
+    {
+        if (in_array($serviceRecord->status, self::EDITABLE_STATUSES, true)) {
+            return null;
+        }
+
+        return back()->withErrors([
+            'status' => 'The problem and cost can no longer be changed for this request.',
+        ]);
     }
 
     private function targetStatusForAction(string $currentStatus, string $action): ?string

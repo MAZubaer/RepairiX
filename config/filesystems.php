@@ -17,6 +17,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Shop Images Disk
+    |--------------------------------------------------------------------------
+    |
+    | Disk used for shop logos and gallery uploads. "public" keeps files on the
+    | server's local disk, which is wiped on every redeploy of a container host
+    | such as Render. In production, point this at persistent storage: either
+    | "s3" (needs league/flysystem-aws-s3-v3 and the AWS_* variables) or the
+    | "public" disk on a mounted persistent volume.
+    |
+    */
+
+    'shop_images_disk' => env('SHOP_IMAGES_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

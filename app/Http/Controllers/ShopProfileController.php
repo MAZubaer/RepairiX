@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateShopProfileRequest;
 use App\Models\Shop;
 use App\Models\ShopImage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -70,11 +71,14 @@ class ShopProfileController extends Controller
             }
         }
 
-        if (! Storage::disk('public')->exists($shopImage->image_path)) {
+        $disk = $this->imageDisk();
+
+        if (! $shopImage->image_path || ! $disk->exists($shopImage->image_path)) {
             abort(404);
         }
 
-        return response()->file(Storage::disk('public')->path($shopImage->image_path));
+        // response() streams from any disk (local or S3), unlike response()->file().
+        return $disk->response($shopImage->image_path);
     }
 
     public function destroyImage(Request $request, ShopImage $shopImage)
@@ -91,7 +95,7 @@ class ShopProfileController extends Controller
 
         DB::transaction(function () use ($shopImage) {
             if ($shopImage->image_path) {
-                Storage::disk('public')->delete($shopImage->image_path);
+                $this->imageDisk()->delete($shopImage->image_path);
             }
 
             $shopImage->delete();
@@ -141,7 +145,7 @@ class ShopProfileController extends Controller
 
                 foreach ($oldLogoPaths as $oldLogoPath) {
                     if ($oldLogoPath) {
-                        Storage::disk('public')->delete($oldLogoPath);
+                        $this->imageDisk()->delete($oldLogoPath);
                     }
                 }
 
@@ -150,7 +154,7 @@ class ShopProfileController extends Controller
                     ->where('type', 'logo')
                     ->delete();
 
-                $logoPath = $request->file('logo')->store('shop_images/logos', 'public');
+                $logoPath = $request->file('logo')->store('shop_images/logos', $this->imageDiskName());
                 ShopImage::create([
                     'shop_id' => $shop->shop_id,
                     'image_path' => $logoPath,
@@ -160,7 +164,7 @@ class ShopProfileController extends Controller
 
             if ($request->hasFile('gallery_images')) {
                 foreach ($request->file('gallery_images') as $galleryImage) {
-                    $galleryPath = $galleryImage->store('shop_images/gallery', 'public');
+                    $galleryPath = $galleryImage->store('shop_images/gallery', $this->imageDiskName());
                     ShopImage::create([
                         'shop_id' => $shop->shop_id,
                         'image_path' => $galleryPath,
@@ -171,5 +175,15 @@ class ShopProfileController extends Controller
         });
 
         return redirect()->route('shop.edit')->with('success', 'Profile updated successfully.');
+    }
+
+    private function imageDiskName(): string
+    {
+        return (string) config('filesystems.shop_images_disk', 'public');
+    }
+
+    private function imageDisk(): FilesystemAdapter
+    {
+        return Storage::disk($this->imageDiskName());
     }
 }

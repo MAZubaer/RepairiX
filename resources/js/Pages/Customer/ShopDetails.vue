@@ -34,7 +34,7 @@
           <div class="mt-4">
             <button type="button" class="btn-primary" @click="openModal">Add Request</button>
             <p v-if="requestSentText" class="mt-2 text-green-700 text-sm font-medium">{{ requestSentText }}</p>
-            <p v-if="errors.server" class="mt-2 text-red-600 text-sm">{{ errors.server[0] }}</p>
+            <p v-if="errors.server" class="mt-2 text-red-600 text-sm">{{ errors.server }}</p>
           </div>
         </section>
 
@@ -72,25 +72,25 @@
           <div>
             <label class="block text-sm font-semibold mb-1">Phone Model</label>
             <input v-model="form.phone_model" type="text" class="form-input" placeholder="e.g., iPhone 13 Pro" required />
-            <div v-if="errors.phone_model" class="text-red-500 text-sm mt-1">{{ errors.phone_model[0] }}</div>
+            <div v-if="errors.phone_model" class="text-red-500 text-sm mt-1">{{ errors.phone_model }}</div>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Phone Number</label>
             <input v-model="form.phone_number" type="text" class="form-input" placeholder="Enter your phone number" required />
-            <div v-if="errors.phone_number" class="text-red-500 text-sm mt-1">{{ errors.phone_number[0] }}</div>
+            <div v-if="errors.phone_number" class="text-red-500 text-sm mt-1">{{ errors.phone_number }}</div>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Phone IMEI Number</label>
             <input v-model="form.phone_imei_number" type="text" class="form-input" placeholder="Enter IMEI number" required />
-            <div v-if="errors.phone_imei_number" class="text-red-500 text-sm mt-1">{{ errors.phone_imei_number[0] }}</div>
+            <div v-if="errors.phone_imei_number" class="text-red-500 text-sm mt-1">{{ errors.phone_imei_number }}</div>
           </div>
 
           <div>
             <label class="block text-sm font-semibold mb-1">Problem Description</label>
             <textarea v-model="form.customer_problem" class="form-input" rows="4" placeholder="Describe the issue with your device" required></textarea>
-            <div v-if="errors.customer_problem" class="text-red-500 text-sm mt-1">{{ errors.customer_problem[0] }}</div>
+            <div v-if="errors.customer_problem" class="text-red-500 text-sm mt-1">{{ errors.customer_problem }}</div>
           </div>
 
           <button type="submit" class="btn-primary w-full" :disabled="form.processing">Send</button>
@@ -120,7 +120,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useForm, usePage } from '@inertiajs/inertia-vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 import CustomerNavbar from '../../Components/CustomerNavbar.vue'
 
 const props = defineProps({
@@ -131,7 +131,7 @@ const props = defineProps({
 })
 
 const page = usePage()
-const errors = computed(() => page.props.value.errors || {})
+const errors = computed(() => page.props.errors || {})
 
 const showModal = ref(false)
 const showImageModal = ref(false)

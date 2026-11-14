@@ -8,6 +8,7 @@ use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ShopRegisterController extends Controller
@@ -47,9 +48,13 @@ class ShopRegisterController extends Controller
             // Log the user in and redirect to pricing for subscription activation.
             Auth::login($user);
             return redirect()->route('shop.pricing');
-        } catch (\Exception $e) {
-            \Log::error('Shop registration failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->withErrors(['server' => 'Unable to create shop account. ' . $e->getMessage()]);
+        } catch (\Throwable $e) {
+            // Log the details for debugging, but never show raw exception text to the user.
+            Log::error('Shop registration failed.', ['exception' => $e]);
+
+            return redirect()->back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors(['server' => 'Unable to create your shop account right now. Please try again.']);
         }
     }
 }

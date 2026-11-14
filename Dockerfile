@@ -2,7 +2,7 @@
 FROM node:20 AS frontend
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build
 
@@ -31,8 +31,8 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Get Composer 2 (pinned major version for reproducible builds)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy the entire Laravel application
 COPY . /var/www/html/

@@ -7,10 +7,13 @@
         <h1 class="text-5xl font-extrabold leading-tight">All Service Requests</h1>
         <p class="mt-2 text-2xl text-gray-600">Monitor all repair requests across the platform</p>
 
-        <section class="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <section class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
           <article class="summary-box"><div class="summary-label">Total Requests</div><div class="summary-value">{{ summary.total }}</div></article>
           <article class="summary-box"><div class="summary-label">Pending</div><div class="summary-value text-amber-600">{{ summary.pending }}</div></article>
+          <article class="summary-box"><div class="summary-label">Accepted</div><div class="summary-value text-green-600">{{ summary.accepted }}</div></article>
+          <article class="summary-box"><div class="summary-label">Rejected</div><div class="summary-value text-rose-600">{{ summary.rejected }}</div></article>
           <article class="summary-box"><div class="summary-label">In Progress</div><div class="summary-value text-yellow-600">{{ summary.in_progress }}</div></article>
+          <article class="summary-box"><div class="summary-label">Completed</div><div class="summary-value text-purple-600">{{ summary.completed }}</div></article>
           <article class="summary-box"><div class="summary-label">Sent from Shop</div><div class="summary-value text-blue-600">{{ summary.sent_from_shop }}</div></article>
           <article class="summary-box"><div class="summary-label">Delivered</div><div class="summary-value text-green-600">{{ summary.delivered }}</div></article>
         </section>
@@ -78,7 +81,16 @@ const props = defineProps({
   requests: { type: Array, default: () => [] },
   summary: {
     type: Object,
-    default: () => ({ total: 0, pending: 0, in_progress: 0, sent_from_shop: 0, delivered: 0 }),
+    default: () => ({
+      total: 0,
+      pending: 0,
+      accepted: 0,
+      rejected: 0,
+      in_progress: 0,
+      completed: 0,
+      sent_from_shop: 0,
+      delivered: 0,
+    }),
   },
 })
 

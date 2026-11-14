@@ -1,59 +1,72 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RepairiX
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A marketplace that connects customers with mobile-phone repair shops. Customers find a shop, submit a repair request and follow it until delivery. Shops pay a subscription to receive and manage requests. Admins oversee shops, requests and customers.
 
-## About Laravel
+**Stack:** Laravel 12 (PHP 8.2), Inertia.js v3, Vue 3, Tailwind CSS v4, Stripe Checkout and webhooks, a database queue for emails.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Roles
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Role | What they can do |
+|---|---|
+| Customer | Browse active shops, send repair requests, track status, accept delivery, rate the shop |
+| Shop | Subscribe (monthly or yearly through Stripe), manage requests (diagnosis, cost, status), edit profile, logo and gallery |
+| Admin | Dashboard stats, activate or deactivate shops, change plan and expiry, view all requests, delete customers |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## How a request moves
 
-## Learning Laravel
+```
+pending ─┬─> accepted ─> in progress ─> completed ─> sent from shop ─> delivered ─> rated
+         └─> rejected
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- The shop drives every step up to "sent from shop". The customer accepts delivery, then rates the shop, and the shop's rating is the average over its delivered requests.
+- A request can only be marked completed once the shop has entered a diagnosis and a cost. Both can be edited only while the request is pending, accepted or in progress.
+- Each status change creates an in-app notification. "In progress" and "completed" also queue an email to the customer.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Local setup
 
-## Laravel Sponsors
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed        # admin + demo shop (+ demo customer test@example.com / password in local env)
+composer run dev           # app server, queue worker, logs and Vite together
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Set `ADMIN_PASSWORD` and `SHOP_OWNER_PASSWORD` in `.env` before seeding. If either is empty, the seeder generates a random password and prints it once.
 
-### Premium Partners
+The app runs on SQLite (the default) or MySQL.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Stripe
 
-## Contributing
+Set `STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_MONTHLY_PRICE_ID` and `STRIPE_YEARLY_PRICE_ID`. Point a Stripe webhook at `POST /stripe/webhook` with these events:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- `checkout.session.completed`
+- `customer.subscription.created`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
 
-## Code of Conduct
+The webhook is the only thing that activates a shop. The checkout success page just waits for it. For local testing, use `stripe listen --forward-to localhost:8000/stripe/webhook`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Tests
 
-## Security Vulnerabilities
+```bash
+php artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The feature tests cover:
 
-## License
+- registration, login redirects by role, login throttling and guest redirects
+- the full repair lifecycle, including emails, notifications, rating and permissions
+- the Stripe webhook, using a locally signed payload
+- admin shop activation
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+They run on in-memory SQLite.
+
+## Deployment (Docker / Render)
+
+The `Dockerfile` builds the frontend with Node, then serves Laravel with PHP 8.2 and Apache. On start, `start.sh` caches config, routes and views, runs migrations, links storage, starts a queue worker that restarts itself if it exits, and then starts Apache.
+
+**Uploaded images:** a container's disk is wiped on every redeploy. Set `SHOP_IMAGES_DISK` to persistent storage: either `s3` (install `league/flysystem-aws-s3-v3` and set the `AWS_*` variables) or the `public` disk on a mounted persistent volume.

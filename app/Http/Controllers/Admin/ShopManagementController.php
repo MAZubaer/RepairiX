@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class ShopManagementController extends Controller
@@ -48,8 +49,12 @@ class ShopManagementController extends Controller
 
         if ($newStatus === 'not_activated') {
             $shop->expiry_date = null;
-        } elseif (! $shop->expiry_date) {
-            $shop->expiry_date = \Illuminate\Support\Carbon::now()->addMonth();
+        } elseif (! $shop->expiry_date || ! $shop->expiry_date->isFuture()) {
+            // A missing or past expiry would make the subscription middleware deactivate
+            // the shop again on its next request, so grant a fresh period for its plan.
+            $shop->expiry_date = $shop->subscription_plan === 'yearly'
+                ? Carbon::now()->addYear()
+                : Carbon::now()->addMonth();
         }
 
         $shop->save();

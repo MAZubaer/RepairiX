@@ -47,7 +47,7 @@
 
 <script setup>
 import Navbar from '../../Components/Navbar.vue'
-import { useForm } from '@inertiajs/inertia-vue3'
+import { useForm } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
 const form = useForm({

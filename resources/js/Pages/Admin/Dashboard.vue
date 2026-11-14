@@ -51,7 +51,7 @@
           <article class="summary-box">
             <div class="summary-head">
               <div>
-                <p class="summary-label">Total Revenue</p>
+                <p class="summary-label">Total Repair Value</p>
                 <p class="summary-value">৳{{ formatAmount(stats.totalRevenue) }}</p>
               </div>
               <span class="summary-icon warning">৳</span>

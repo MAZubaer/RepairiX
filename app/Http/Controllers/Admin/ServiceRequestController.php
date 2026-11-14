@@ -41,7 +41,10 @@ class ServiceRequestController extends Controller
             'summary' => [
                 'total' => $records->count(),
                 'pending' => $records->where('status', 'pending')->count(),
+                'accepted' => $records->where('status', 'accepted')->count(),
+                'rejected' => $records->where('status', 'rejected')->count(),
                 'in_progress' => $records->where('status', 'in progress')->count(),
+                'completed' => $records->where('status', 'completed')->count(),
                 'sent_from_shop' => $records->where('status', 'sent from shop')->count(),
                 'delivered' => $records->where('status', 'delivered')->count(),
             ],

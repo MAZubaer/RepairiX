@@ -54,4 +54,17 @@ class User extends Authenticatable
     {
         return $this->hasOne(Shop::class, 'user_id', 'id');
     }
+
+    /**
+     * The landing page for this user's role. Shops without an active
+     * subscription are sent on to pricing by the subscription middleware.
+     */
+    public function homeUrl(): string
+    {
+        return match ($this->role) {
+            'admin' => route('admin.dashboard'),
+            'shop' => route('dashboard.shop'),
+            default => route('dashboard.customer'),
+        };
+    }
 }

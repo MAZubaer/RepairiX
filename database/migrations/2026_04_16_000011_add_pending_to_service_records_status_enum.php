@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('service_records')) {
+        if (! $this->isMysqlWithTable()) {
             return;
         }
 
@@ -23,10 +23,20 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (! Schema::hasTable('service_records')) {
+        if (! $this->isMysqlWithTable()) {
             return;
         }
 
         DB::statement("ALTER TABLE service_records MODIFY COLUMN status ENUM('accepted','rejected','in progress','completed','sent from shop','delivered') NOT NULL");
+    }
+
+    /**
+     * MODIFY COLUMN is MySQL/MariaDB syntax. On other drivers (e.g. SQLite in tests) the
+     * create_service_records_table migration already includes 'pending', so nothing to do.
+     */
+    private function isMysqlWithTable(): bool
+    {
+        return Schema::hasTable('service_records')
+            && in_array(DB::getDriverName(), ['mysql', 'mariadb'], true);
     }
 };

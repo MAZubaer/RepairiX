@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Controllers\Auth\CustomerRegisterController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ShopRegisterController;
 use App\Http\Controllers\ShopProfileController;
 use App\Http\Controllers\ShopDashboardController;
 use App\Http\Controllers\CustomerDashboardController;
@@ -16,7 +18,6 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ShopManagementController as AdminShopManagementController;
 use App\Http\Controllers\Admin\ServiceRequestController as AdminServiceRequestController;
 use App\Http\Controllers\Admin\CustomerManagementController as AdminCustomerManagementController;
-use App\Models\Shop;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -30,86 +31,24 @@ Route::get('/about', function () {
     ]);
 })->name('about');
 
-// Registration pages
-use App\Http\Controllers\Auth\CustomerRegisterController;
-use App\Http\Controllers\Auth\ShopRegisterController;
+// Guest-only pages: registration and login
+Route::middleware('guest')->group(function () {
+    Route::get('/register/customer', [CustomerRegisterController::class, 'create'])->name('register.customer');
+    Route::post('/register/customer', [CustomerRegisterController::class, 'store'])->name('register.customer.store');
 
-Route::get('/register/customer', [CustomerRegisterController::class, 'create'])->name('register.customer');
-Route::post('/register/customer', [CustomerRegisterController::class, 'store'])->name('register.customer.store');
+    Route::get('/register/shop', [ShopRegisterController::class, 'create'])->name('register.shop');
+    Route::post('/register/shop', [ShopRegisterController::class, 'store'])->name('register.shop.store');
 
-Route::get('/register/shop', [ShopRegisterController::class, 'create'])->name('register.shop');
-Route::post('/register/shop', [ShopRegisterController::class, 'store'])->name('register.shop.store');
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+});
 
-// (temporary CSRF-exempt test endpoints removed)
-
-Route::get('/login', function () {
-    if (Auth::check()) {
-        $role = Auth::user()->role;
-
-        if ($role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        if ($role === 'shop') {
-            return redirect()->route('dashboard.shop');
-        }
-
-        return redirect()->route('dashboard.customer');
-    }
-
-    return Inertia::render('Auth/Login');
-})->name('login');
-
-Route::post('/login', function (Request $request) {
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
-
-    if (! Auth::attempt($credentials)) {
-        return back()->withErrors([
-            'email' => 'Invalid email or password.',
-        ])->onlyInput('email');
-    }
-
-    $request->session()->regenerate();
-
-    $user = Auth::user();
-
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-
-    if ($user->role === 'shop') {
-        $shop = Shop::where('user_id', $user->id)->first();
-
-        $isSubscriptionActive = $shop
-            && $shop->subscription_status === 'activated'
-            && $shop->expiry_date
-            && $shop->expiry_date->isFuture();
-
-        if (! $isSubscriptionActive) {
-            return redirect()->route('shop.pricing');
-        }
-
-        return redirect()->route('dashboard.shop');
-    }
-
-    return redirect()->route('dashboard.customer');
-})->name('login.store');
-
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect('/');
-})->middleware('auth')->name('logout');
+Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
 // Dashboards
-Route::get('/dashboard/customer', function () {
-    return app(CustomerDashboardController::class)->show();
-})->name('dashboard.customer')->middleware('auth');
+Route::get('/dashboard/customer', [CustomerDashboardController::class, 'show'])
+    ->name('dashboard.customer')
+    ->middleware('auth');
 
 Route::prefix('admin')
     ->name('admin.')
@@ -153,9 +92,9 @@ Route::post('/customer/updates/{serviceRecord}/rating', [CustomerUpdatesControll
     ->name('customer.updates.rating')
     ->middleware('auth');
 
-Route::get('/dashboard/shop', function () {
-    return app(ShopDashboardController::class)->show();
-})->name('dashboard.shop')->middleware(['auth', 'shop.subscription']);
+Route::get('/dashboard/shop', [ShopDashboardController::class, 'show'])
+    ->name('dashboard.shop')
+    ->middleware(['auth', 'shop.subscription']);
 
 Route::get('/shop/pricing', [ShopBillingController::class, 'pricing'])
     ->name('shop.pricing')
@@ -210,5 +149,3 @@ Route::get('/shop/images/{shopImage}', [ShopProfileController::class, 'showImage
 Route::delete('/shop/images/{shopImage}', [ShopProfileController::class, 'destroyImage'])
     ->name('shop.images.destroy')
     ->middleware(['auth', 'shop.subscription']);
-
-// (debug route removed)

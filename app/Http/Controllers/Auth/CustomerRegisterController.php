@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CustomerRegisterController extends Controller
@@ -44,9 +45,13 @@ class CustomerRegisterController extends Controller
             // Log the user in and redirect to customer dashboard
             Auth::login($user);
             return redirect()->route('dashboard.customer');
-        } catch (\Exception $e) {
-            \Log::error('Customer registration failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->withErrors(['server' => 'Unable to create account. ' . $e->getMessage()]);
+        } catch (\Throwable $e) {
+            // Log the details for debugging, but never show raw exception text to the user.
+            Log::error('Customer registration failed.', ['exception' => $e]);
+
+            return redirect()->back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors(['server' => 'Unable to create your account right now. Please try again.']);
         }
     }
 }

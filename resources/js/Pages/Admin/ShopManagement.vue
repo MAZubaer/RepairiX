@@ -95,7 +95,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
+import { router } from '@inertiajs/vue3'
 import AdminNavbar from '../../Components/AdminNavbar.vue'
 
 const props = defineProps({
@@ -118,15 +118,15 @@ const filteredShops = computed(() => {
 })
 
 function toggleStatus(shop) {
-  Inertia.post(`/admin/shops/${shop.shop_id}/toggle-status`, {}, { preserveScroll: true })
+  router.post(`/admin/shops/${shop.shop_id}/toggle-status`, {}, { preserveScroll: true })
 }
 
 function changePlan(shop, plan) {
-  Inertia.post(`/admin/shops/${shop.shop_id}/plan`, { plan }, { preserveScroll: true })
+  router.post(`/admin/shops/${shop.shop_id}/plan`, { plan }, { preserveScroll: true })
 }
 
 function changeExpiry(shop, expiryDate) {
-  Inertia.post(`/admin/shops/${shop.shop_id}/expiry`, { expiry_date: expiryDate }, { preserveScroll: true })
+  router.post(`/admin/shops/${shop.shop_id}/expiry`, { expiry_date: expiryDate }, { preserveScroll: true })
 }
 </script>
 

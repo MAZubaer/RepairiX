@@ -20,7 +20,7 @@
 
         <section v-if="errors.billing" class="mt-4">
           <div class="rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-rose-700 text-sm">
-            {{ errors.billing[0] }}
+            {{ errors.billing }}
           </div>
         </section>
 
@@ -92,8 +92,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import { usePage } from '@inertiajs/inertia-vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import ShopNavbar from '../../Components/ShopNavbar.vue'
 
 const props = defineProps({
@@ -112,7 +111,7 @@ const props = defineProps({
 })
 
 const page = usePage()
-const errors = computed(() => page.props.value.errors || {})
+const errors = computed(() => page.props.errors || {})
 const loadingPlan = ref(null)
 
 const isActive = computed(() => {
@@ -146,7 +145,7 @@ const messageClass = computed(() => {
 function startCheckout(plan) {
   loadingPlan.value = plan
 
-  Inertia.post('/shop/billing/checkout', { plan }, {
+  router.post('/shop/billing/checkout', { plan }, {
     onFinish: () => {
       loadingPlan.value = null
     },
