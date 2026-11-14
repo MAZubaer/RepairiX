@@ -31,9 +31,8 @@ class UpdateShopProfileRequest extends FormRequest
             'shop_address' => 'required|string|max:255',
             'motto' => 'nullable|string|max:255',
             'services_provided' => 'nullable|string',
-            'logo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:4096',
-            'gallery_images' => 'nullable|array',
-            'gallery_images.*' => 'image|mimes:jpeg,jpg,png,webp|max:4096',
+            // Photos are managed on their own page (ShopPhotoController).
+            'logo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
         ];
     }
 }

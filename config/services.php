@@ -35,6 +35,13 @@ return [
         ],
     ],
 
+    'cloudinary' => [
+        // cloudinary://API_KEY:API_SECRET@CLOUD_NAME (Cloudinary dashboard > API Keys)
+        'url' => env('CLOUDINARY_URL'),
+        // Top-level folder for this app's uploads in your Cloudinary media library.
+        'folder' => env('CLOUDINARY_FOLDER', 'Repairix'),
+    ],
+
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),

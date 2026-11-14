@@ -79,7 +79,7 @@ class ShopCustomerManagementController extends Controller
         $serviceRecord->shop_problem = $validated['shop_problem'];
         $serviceRecord->save();
 
-        return back();
+        return back()->with('success', 'Diagnosis saved.');
     }
 
     public function updateCost(Request $request, ServiceRecord $serviceRecord)
@@ -97,7 +97,7 @@ class ShopCustomerManagementController extends Controller
         $serviceRecord->repair_cost = round((float) $validated['repair_cost'], 2);
         $serviceRecord->save();
 
-        return back();
+        return back()->with('success', 'Repair cost saved.');
     }
 
     public function updateStatus(Request $request, ServiceRecord $serviceRecord)
@@ -131,7 +131,14 @@ class ShopCustomerManagementController extends Controller
             'message' => $this->notificationMessageForStatus($serviceRecord->phone_model, $targetStatus),
         ]);
 
-        return back();
+        return back()->with('success', match ($targetStatus) {
+            'accepted' => 'Request accepted.',
+            'rejected' => 'Request rejected.',
+            'in progress' => 'Repair started. The customer has been notified.',
+            'completed' => 'Marked as completed. The customer has been notified.',
+            'sent from shop' => 'Marked as sent. Waiting for the customer to confirm delivery.',
+            default => 'Status updated.',
+        });
     }
 
     private function assertShopOwnsRecord(Request $request, ServiceRecord $serviceRecord): void

@@ -45,7 +45,7 @@ class CustomerUpdatesController extends Controller
         $serviceRecord->status = 'delivered';
         $serviceRecord->save();
 
-        return back();
+        return back()->with('success', 'Delivery confirmed. Please rate your repair.');
     }
 
     public function submitRating(Request $request, ServiceRecord $serviceRecord)
@@ -83,7 +83,7 @@ class CustomerUpdatesController extends Controller
             'rating' => $averageRating ? round((float) $averageRating, 2) : 0,
         ]);
 
-        return back();
+        return back()->with('success', 'Thanks for rating your repair!');
     }
 
     private function mappedRecordsForCustomer(Request $request, ?array $statusFilter = null)

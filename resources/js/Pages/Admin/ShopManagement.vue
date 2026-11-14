@@ -1,215 +1,133 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <AdminNavbar />
+  <AppLayout title="Shops">
+    <PageHeader eyebrow="Admin" title="Shops" subtitle="Manage subscriptions, plans and activation for every repair shop." />
 
-    <main class="flex-1 py-10">
-      <div class="w-full max-w-7xl mx-auto px-6">
-        <h1 class="text-5xl font-extrabold leading-tight">Shop Management</h1>
-        <p class="mt-2 text-2xl text-gray-600">Manage shop subscriptions, plans, and activation status</p>
+    <div class="mb-6 grid gap-4 sm:grid-cols-3">
+      <StatCard label="Total shops" :value="summary.total" :icon="Store" />
+      <StatCard label="Active" :value="summary.active" :icon="BadgeCheck" tone="emerald" />
+      <StatCard label="Inactive" :value="summary.inactive" :icon="CircleOff" tone="rose" />
+    </div>
 
-        <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <article class="summary-box">
-            <div class="summary-label">Total Shops</div>
-            <div class="summary-value">{{ summary.total }}</div>
-          </article>
-          <article class="summary-box">
-            <div class="summary-label">Active Subscriptions</div>
-            <div class="summary-value text-green-600">{{ summary.active }}</div>
-          </article>
-          <article class="summary-box">
-            <div class="summary-label">Inactive Subscriptions</div>
-            <div class="summary-value text-red-600">{{ summary.inactive }}</div>
-          </article>
-        </section>
-
-        <div class="mt-6">
-          <div class="relative">
-            <span class="search-icon">🔎</span>
-            <input v-model="search" type="text" class="form-input search-input" placeholder="Search shops by name, owner, or location..." />
-          </div>
+    <div class="card overflow-hidden">
+      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center lg:justify-between">
+        <FilterTabs v-model="tab" :tabs="tabs" />
+        <div class="lg:w-80">
+          <SearchInput v-model="search" placeholder="Search name, email or location…" />
         </div>
-
-        <section class="mt-6 rounded-xl border border-slate-300 bg-white overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[1050px] text-left">
-              <thead class="bg-slate-50 border-b border-slate-300">
-                <tr class="text-sm text-slate-700">
-                  <th class="px-4 py-4 font-semibold">Shop Name</th>
-                  <th class="px-4 py-4 font-semibold">Owner</th>
-                  <th class="px-4 py-4 font-semibold">Contact</th>
-                  <th class="px-4 py-4 font-semibold">Location</th>
-                  <th class="px-4 py-4 font-semibold">Status</th>
-                  <th class="px-4 py-4 font-semibold">Plan</th>
-                  <th class="px-4 py-4 font-semibold">Expiry Date</th>
-                  <th class="px-4 py-4 font-semibold">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr v-for="shop in filteredShops" :key="shop.shop_id" class="border-b border-slate-200 align-top">
-                  <td class="px-4 py-4 font-semibold text-2xl">{{ shop.name }}</td>
-                  <td class="px-4 py-4 text-xl">{{ shop.owner }}</td>
-                  <td class="px-4 py-4 text-lg">
-                    <div>{{ shop.contact_email }}</div>
-                    <div class="text-slate-500">{{ shop.contact_phone }}</div>
-                  </td>
-                  <td class="px-4 py-4 text-xl">{{ shop.location }}</td>
-                  <td class="px-4 py-4">
-                    <span :class="shop.status === 'activated' ? 'badge-active' : 'badge-inactive'">
-                      {{ shop.status === 'activated' ? 'Active' : 'Inactive' }}
-                    </span>
-                  </td>
-                  <td class="px-4 py-4">
-                    <select class="form-input" :value="shop.plan" @change="changePlan(shop, $event.target.value)">
-                      <option value="monthly">Monthly</option>
-                      <option value="yearly">Yearly</option>
-                    </select>
-                  </td>
-                  <td class="px-4 py-4">
-                    <input class="form-input" type="date" :value="shop.expiry_date" @change="changeExpiry(shop, $event.target.value)" />
-                  </td>
-                  <td class="px-4 py-4">
-                    <button
-                      type="button"
-                      :class="shop.status === 'activated' ? 'btn-danger' : 'btn-success'"
-                      @click="toggleStatus(shop)"
-                    >
-                      {{ shop.status === 'activated' ? 'Deactivate' : 'Activate' }}
-                    </button>
-                  </td>
-                </tr>
-
-                <tr v-if="!filteredShops.length">
-                  <td colspan="8" class="px-4 py-10 text-center text-slate-500">No shop found for this search.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
       </div>
-    </main>
 
-    <footer class="h-12"></footer>
-  </div>
+      <div v-if="filteredShops.length" class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Shop</th>
+              <th>Contact</th>
+              <th>Status</th>
+              <th>Plan</th>
+              <th>Expires</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="shop in filteredShops" :key="shop.shop_id">
+              <td>
+                <div class="flex items-center gap-3">
+                  <Avatar :name="shop.name" rounded />
+                  <div class="min-w-0">
+                    <p class="font-semibold text-slate-900">{{ shop.name }}</p>
+                    <p class="flex items-center gap-1 text-xs text-slate-500"><MapPin class="size-3" />{{ shop.location }}</p>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <p class="text-slate-700">{{ shop.contact_email }}</p>
+                <p class="text-xs text-slate-500">{{ shop.contact_phone }}</p>
+              </td>
+              <td>
+                <span
+                  class="chip ring-1 ring-inset"
+                  :class="shop.status === 'activated' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : 'bg-slate-100 text-slate-600 ring-slate-500/20'"
+                >
+                  <span class="size-1.5 rounded-full" :class="shop.status === 'activated' ? 'bg-emerald-500' : 'bg-slate-400'" />
+                  {{ shop.status === 'activated' ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <select class="input w-32 py-2" :value="shop.plan" aria-label="Plan" @change="changePlan(shop, $event.target.value)">
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </td>
+              <td>
+                <input class="input w-40 py-2" type="date" :value="shop.expiry_date" aria-label="Expiry date" @change="changeExpiry(shop, $event.target.value)" />
+              </td>
+              <td class="text-right">
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  :class="shop.status === 'activated' ? 'btn-soft-danger' : 'btn-primary'"
+                  @click="toggleStatus(shop)"
+                >
+                  <Power class="size-3.5" />
+                  {{ shop.status === 'activated' ? 'Deactivate' : 'Activate' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <EmptyState v-else :icon="Store" title="No shops found" description="Try another search or filter." />
+    </div>
+  </AppLayout>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
-import AdminNavbar from '../../Components/AdminNavbar.vue'
+import { BadgeCheck, CircleOff, MapPin, Power, Store } from 'lucide-vue-next'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import Avatar from '../../Components/Avatar.vue'
+import EmptyState from '../../Components/EmptyState.vue'
+import FilterTabs from '../../Components/FilterTabs.vue'
+import PageHeader from '../../Components/PageHeader.vue'
+import SearchInput from '../../Components/SearchInput.vue'
+import StatCard from '../../Components/StatCard.vue'
 
 const props = defineProps({
   shops: { type: Array, default: () => [] },
-  summary: {
-    type: Object,
-    default: () => ({ total: 0, active: 0, inactive: 0 }),
-  },
+  summary: { type: Object, default: () => ({ total: 0, active: 0, inactive: 0 }) },
 })
 
 const search = ref('')
+const tab = ref('all')
+
+const tabs = computed(() => [
+  { value: 'all', label: 'All', count: props.shops.length },
+  { value: 'activated', label: 'Active', count: props.shops.filter((s) => s.status === 'activated').length },
+  { value: 'not_activated', label: 'Inactive', count: props.shops.filter((s) => s.status !== 'activated').length },
+])
 
 const filteredShops = computed(() => {
   const q = search.value.trim().toLowerCase()
-  if (!q) return props.shops
-
   return props.shops.filter((shop) => {
-    return [shop.name, shop.owner, shop.location].some((v) => String(v || '').toLowerCase().includes(q))
+    if (tab.value === 'activated' && shop.status !== 'activated') return false
+    if (tab.value === 'not_activated' && shop.status === 'activated') return false
+    return !q || [shop.name, shop.owner, shop.location, shop.contact_email].some((v) => String(v || '').toLowerCase().includes(q))
   })
 })
 
+const opts = { preserveScroll: true, preserveState: true }
+
 function toggleStatus(shop) {
-  router.post(`/admin/shops/${shop.shop_id}/toggle-status`, {}, { preserveScroll: true })
+  router.post(`/admin/shops/${shop.shop_id}/toggle-status`, {}, opts)
 }
 
 function changePlan(shop, plan) {
-  router.post(`/admin/shops/${shop.shop_id}/plan`, { plan }, { preserveScroll: true })
+  router.post(`/admin/shops/${shop.shop_id}/plan`, { plan }, opts)
 }
 
 function changeExpiry(shop, expiryDate) {
-  router.post(`/admin/shops/${shop.shop_id}/expiry`, { expiry_date: expiryDate }, { preserveScroll: true })
+  if (!expiryDate) return
+  router.post(`/admin/shops/${shop.shop_id}/expiry`, { expiry_date: expiryDate }, opts)
 }
 </script>
-
-<style scoped>
-.form-input {
-  width: 100%;
-  min-height: 2.75rem;
-  padding: 0.55rem 0.8rem;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  border-radius: 0.7rem;
-  background: #fff;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.08);
-}
-
-.summary-box {
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 0.9rem;
-  background: #fff;
-  padding: 1.2rem;
-}
-
-.summary-label {
-  color: #475569;
-}
-
-.summary-value {
-  font-size: 2.1rem;
-  font-weight: 800;
-  margin-top: 0.25rem;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.7;
-}
-
-.search-input {
-  padding-left: 2.6rem;
-}
-
-.badge-active,
-.badge-inactive {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 0.28rem 0.85rem;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.badge-active {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.badge-inactive {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.btn-danger,
-.btn-success {
-  border-radius: 0.7rem;
-  padding: 0.5rem 0.95rem;
-  font-weight: 700;
-}
-
-.btn-danger {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.btn-success {
-  background: #dcfce7;
-  color: #15803d;
-}
-</style>

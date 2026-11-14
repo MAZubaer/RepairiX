@@ -1,110 +1,156 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <ShopNavbar />
+  <AppLayout title="Shop profile">
+    <PageHeader title="Shop profile" subtitle="This is what customers see when they browse and open your shop.">
+      <template #actions>
+        <Link href="/dashboard/shop" class="btn btn-secondary">
+          <Eye class="size-4" />
+          View overview
+        </Link>
+      </template>
+    </PageHeader>
 
-    <main class="flex-1 flex items-start justify-center py-10">
-      <div class="w-full max-w-3xl px-6">
-        <h1 class="text-4xl font-extrabold mb-6">Edit Profile</h1>
-
-        <div v-if="successMessage" class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          {{ successMessage }}
+    <form class="space-y-6 pb-28" novalidate @submit.prevent="submit">
+      <!-- Business details -->
+      <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
+        <div>
+          <h2 class="font-bold text-slate-900">Business details</h2>
+          <p class="mt-1 text-sm text-slate-500">How customers find and contact you.</p>
         </div>
+        <div class="grid gap-5 sm:grid-cols-2 lg:col-span-2">
+          <FormField id="shop_name" label="Shop name" :icon="Store" :error="errors.shop_name">
+            <template #default="{ id, inputClass }">
+              <input :id="id" v-model="form.shop_name" type="text" required :class="inputClass" />
+            </template>
+          </FormField>
+          <FormField id="email" label="Business email" :icon="Mail" :error="errors.email" hint="Your login email can't be changed.">
+            <template #default="{ id, inputClass }">
+              <input :id="id" v-model="form.email" type="email" readonly :class="inputClass" />
+            </template>
+          </FormField>
+          <FormField id="phone" label="Phone number" :icon="Phone" :error="errors.phone">
+            <template #default="{ id, inputClass }">
+              <input :id="id" v-model="form.phone" type="tel" required :class="inputClass" />
+            </template>
+          </FormField>
+          <FormField id="shop_address" label="Shop address" :icon="MapPin" :error="errors.shop_address">
+            <template #default="{ id, inputClass }">
+              <input :id="id" v-model="form.shop_address" type="text" required :class="inputClass" />
+            </template>
+          </FormField>
+        </div>
+      </section>
 
-        <form @submit.prevent="submit" class="space-y-5 bg-white p-6 rounded-lg shadow-sm border">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-semibold mb-1">Shop Name</label>
-              <input v-model="form.shop_name" type="text" class="form-input" required />
-              <div v-if="errors.shop_name" class="text-red-500 text-sm mt-1">{{ errors.shop_name }}</div>
+      <!-- About -->
+      <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
+        <div>
+          <h2 class="font-bold text-slate-900">About your shop</h2>
+          <p class="mt-1 text-sm text-slate-500">A short motto and the repairs you offer.</p>
+        </div>
+        <div class="space-y-5 lg:col-span-2">
+          <FormField id="motto" label="Motto" optional :error="errors.motto">
+            <template #default="{ id, inputClass }">
+              <input :id="id" v-model="form.motto" type="text" maxlength="255" :class="inputClass" placeholder="e.g. Fast, honest phone repairs" />
+            </template>
+          </FormField>
+          <FormField id="services_provided" label="Services" optional :error="errors.services_provided" hint="One service per line works well.">
+            <template #default="{ id, inputClass }">
+              <textarea :id="id" v-model="form.services_provided" rows="6" :class="inputClass" placeholder="Screen replacement&#10;Battery replacement&#10;Charging port repair" />
+            </template>
+          </FormField>
+        </div>
+      </section>
+
+      <!-- Logo -->
+      <section class="card grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
+        <div>
+          <h2 class="font-bold text-slate-900">Logo</h2>
+          <p class="mt-1 text-sm text-slate-500">Square images look best. PNG, JPG or WebP, up to 4 MB.</p>
+        </div>
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center lg:col-span-2">
+          <Avatar :name="form.shop_name" :src="logoPreview || logo?.url" size="xl" rounded class="shadow-soft" />
+          <div class="space-y-3">
+            <div class="flex flex-wrap gap-2">
+              <label class="btn btn-secondary cursor-pointer">
+                <Upload class="size-4" />
+                {{ logo || logoPreview ? 'Replace logo' : 'Upload logo' }}
+                <input type="file" accept="image/png,image/jpeg,image/webp" class="sr-only" @change="onLogoChange" />
+              </label>
+              <button v-if="logoPreview" type="button" class="btn btn-ghost" @click="clearLogo">Undo</button>
+              <button v-else-if="logo" type="button" class="btn btn-soft-danger" @click="confirmDelete = { id: logo.image_id, kind: 'logo' }">
+                <Trash2 class="size-4" />
+                Remove
+              </button>
             </div>
-
-            <div>
-              <label class="block text-sm font-semibold mb-1">Business Email</label>
-              <input v-model="form.email" type="email" class="form-input form-input-readonly" readonly required />
-              <p class="text-xs text-slate-500 mt-1">You cannot change your email.</p>
-              <div v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-semibold mb-1">Phone Number</label>
-              <input v-model="form.phone" type="text" class="form-input" required />
-              <div v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-semibold mb-1">Shop Address</label>
-              <input v-model="form.shop_address" type="text" class="form-input" required />
-              <div v-if="errors.shop_address" class="text-red-500 text-sm mt-1">{{ errors.shop_address }}</div>
-            </div>
+            <p v-if="logoPreview" class="text-xs font-medium text-brand-700">New logo selected. Save changes to apply it.</p>
+            <p v-if="errors.logo" class="field-error">{{ errors.logo }}</p>
           </div>
+        </div>
+      </section>
 
-          <div>
-            <label class="block text-sm font-semibold mb-1">Shop Motto</label>
-            <input v-model="form.motto" type="text" class="form-input" placeholder="Enter shop motto" />
-            <div v-if="errors.motto" class="text-red-500 text-sm mt-1">{{ errors.motto }}</div>
-          </div>
+      <!-- Photos live on their own page -->
+      <Link href="/shop/photos" class="card card-hover group flex items-center gap-5 p-6 sm:p-8">
+        <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600">
+          <Camera class="size-7" />
+        </span>
+        <div class="min-w-0 flex-1">
+          <h2 class="font-bold text-slate-900">Photos</h2>
+          <p class="mt-1 text-sm text-slate-500">
+            {{ photoCount ? `${photoCount} photo${photoCount === 1 ? '' : 's'} on your shop page.` : 'No photos yet.' }}
+            Upload, reorder and choose your cover photo.
+          </p>
+        </div>
+        <span class="btn btn-secondary shrink-0">
+          Manage photos
+          <ArrowRight class="size-4 transition group-hover:translate-x-0.5" />
+        </span>
+      </Link>
 
-          <div>
-            <label class="block text-sm font-semibold mb-1">Services Provided</label>
-            <textarea v-model="form.services_provided" rows="5" class="form-input" placeholder="Describe services offered"></textarea>
-            <div v-if="errors.services_provided" class="text-red-500 text-sm mt-1">{{ errors.services_provided }}</div>
+      <!-- Sticky save bar -->
+      <div class="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/90 backdrop-blur">
+        <div class="container-page flex items-center justify-between gap-3 py-3">
+          <p class="hidden text-sm text-slate-500 sm:block">
+            <span v-if="form.isDirty" class="font-medium text-amber-700">You have unsaved changes.</span>
+            <span v-else>All changes saved.</span>
+          </p>
+          <div class="flex w-full gap-2 sm:w-auto">
+            <button type="button" class="btn btn-ghost flex-1 sm:flex-none" :disabled="!form.isDirty || form.processing" @click="resetForm">Discard</button>
+            <button type="submit" class="btn btn-primary flex-1 sm:flex-none" :disabled="form.processing">
+              <LoaderCircle v-if="form.processing" class="size-4 animate-spin" />
+              Save changes
+            </button>
           </div>
-
-          <div class="rounded-md border border-dashed border-gray-300 p-4">
-            <label class="block text-sm font-semibold mb-2">Shop Logo</label>
-            <div v-if="logo" class="mb-3">
-              <div class="inline-flex flex-col items-start gap-2">
-                <img :src="logo.url" alt="Current logo" class="h-20 w-20 object-cover rounded-md border" />
-                <button type="button" class="btn-danger text-xs" @click="deleteLogo">Delete Logo</button>
-              </div>
-            </div>
-            <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" @change="onLogoChange" class="block w-full text-sm" />
-            <div v-if="errors.logo" class="text-red-500 text-sm mt-1">{{ errors.logo }}</div>
-          </div>
-
-          <div class="rounded-md border border-dashed border-gray-300 p-4">
-            <label class="block text-sm font-semibold mb-2">Shop Images</label>
-            <div v-if="gallery.length" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-              <div v-for="img in gallery" :key="img.image_id" class="relative">
-                <img :src="img.url" alt="Gallery image" class="h-24 w-full object-cover rounded-md border" />
-                <button
-                  type="button"
-                  class="btn-danger absolute right-2 top-2 text-xs"
-                  @click="deleteGalleryImage(img.image_id)"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-            <input type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp" @change="onGalleryChange" class="block w-full text-sm" />
-            <div v-if="errors.gallery_images" class="text-red-500 text-sm mt-1">{{ errors.gallery_images }}</div>
-            <div v-if="errors['gallery_images.0']" class="text-red-500 text-sm mt-1">{{ errors['gallery_images.0'] }}</div>
-          </div>
-
-          <div class="flex gap-3">
-            <button type="submit" class="btn-primary" :disabled="form.processing">Save Changes</button>
-            <a href="/dashboard/shop" class="inline-flex items-center px-4 py-2 rounded-md border text-sm">Cancel</a>
-          </div>
-        </form>
+        </div>
       </div>
-    </main>
-  </div>
+    </form>
+
+    <ConfirmDialog
+      :show="!!confirmDelete"
+      danger
+      title="Remove logo?"
+      message="This can't be undone."
+      confirm-label="Delete"
+      :processing="deleting"
+      @cancel="confirmDelete = null"
+      @confirm="deleteImage"
+    />
+  </AppLayout>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { router, useForm, usePage } from '@inertiajs/vue3'
-import ShopNavbar from '../../Components/ShopNavbar.vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { Link, router, useForm } from '@inertiajs/vue3'
+import { ArrowRight, Camera, Eye, LoaderCircle, Mail, MapPin, Phone, Store, Trash2, Upload } from 'lucide-vue-next'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import Avatar from '../../Components/Avatar.vue'
+import ConfirmDialog from '../../Components/ConfirmDialog.vue'
+import FormField from '../../Components/FormField.vue'
+import PageHeader from '../../Components/PageHeader.vue'
 
 const props = defineProps({
   profile: { type: Object, required: true },
   logo: { type: Object, default: null },
-  gallery: { type: Array, default: () => [] },
+  photoCount: { type: Number, default: 0 },
 })
-
-const page = usePage()
-const errors = computed(() => page.props.errors || {})
-const successMessage = ref('')
 
 const form = useForm({
   shop_name: props.profile.shop_name || '',
@@ -114,74 +160,67 @@ const form = useForm({
   motto: props.profile.motto || '',
   services_provided: props.profile.services_provided || '',
   logo: null,
-  gallery_images: [],
 })
 
-function onLogoChange(event) {
-  const file = event.target.files && event.target.files[0] ? event.target.files[0] : null
-  form.logo = file
+const errors = computed(() => form.errors)
+
+const logoPreview = ref(null)
+const confirmDelete = ref(null)
+const deleting = ref(false)
+
+function revoke(url) {
+  if (url) URL.revokeObjectURL(url)
 }
 
-function onGalleryChange(event) {
-  const files = event.target.files ? Array.from(event.target.files) : []
-  form.gallery_images = files
+function onLogoChange(event) {
+  const file = event.target.files?.[0] || null
+  event.target.value = ''
+  if (!file) return
+  revoke(logoPreview.value)
+  form.logo = file
+  logoPreview.value = URL.createObjectURL(file)
+}
+
+function clearLogo() {
+  revoke(logoPreview.value)
+  logoPreview.value = null
+  form.logo = null
+}
+
+function clearUploads() {
+  clearLogo()
+}
+
+function resetForm() {
+  form.reset()
+  form.clearErrors()
+  clearUploads()
 }
 
 function submit() {
-  successMessage.value = ''
   form.post('/shop/edit', {
     forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {
-      successMessage.value = 'Changes saved successfully.'
-    },
-    onError: () => {
-      successMessage.value = ''
+      clearUploads()
+      // The saved values become the new baseline for "unsaved changes".
+      form.defaults({ ...form.data(), logo: null })
     },
   })
 }
 
-function deleteLogo() {
-  if (!props.logo || !props.logo.image_id) {
-    return
-  }
-
-  if (!window.confirm('Delete current logo?')) {
-    return
-  }
-
-  successMessage.value = ''
-  router.delete(`/shop/images/${props.logo.image_id}`, {
+function deleteImage() {
+  if (!confirmDelete.value) return
+  deleting.value = true
+  router.delete(`/shop/images/${confirmDelete.value.id}`, {
     preserveScroll: true,
-    onSuccess: () => {
-      successMessage.value = 'Logo deleted successfully.'
+    preserveState: true,
+    onFinish: () => {
+      deleting.value = false
+      confirmDelete.value = null
     },
   })
 }
 
-function deleteGalleryImage(imageId) {
-  if (!imageId) {
-    return
-  }
-
-  if (!window.confirm('Delete this shop image?')) {
-    return
-  }
-
-  successMessage.value = ''
-  router.delete(`/shop/images/${imageId}`, {
-    preserveScroll: true,
-    onSuccess: () => {
-      successMessage.value = 'Shop image deleted successfully.'
-    },
-  })
-}
+onBeforeUnmount(clearUploads)
 </script>
-
-<style scoped>
-.form-input{ width:100%; padding:.75rem 1rem; border:1px solid rgba(15,23,42,0.08); border-radius:.5rem; }
-.form-input:focus{ outline:none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(20,184,166,0.08); }
-.form-input-readonly{ background:#f3f4f6; cursor:not-allowed; }
-.btn-danger{ display:inline-flex; align-items:center; justify-content:center; padding:.3rem .5rem; border-radius:.5rem; background:#ef4444; color:#fff; font-weight:700; }
-.btn-danger:hover{ opacity:.92; }
-</style>

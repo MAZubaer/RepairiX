@@ -17,7 +17,8 @@ class CustomerDashboardController extends Controller
         $shops = Shop::query()
             ->with([
                 'user:id,name,location',
-                'logoImage:image_id,shop_id,image_path',
+                'logoImage',
+                'coverImage',
             ])
             ->whereHas('user', function ($q) {
                 $q->where('role', 'shop');
@@ -33,9 +34,9 @@ class CustomerDashboardController extends Controller
                     'name' => $shop->user?->name ?? 'Shop',
                     'location' => $shop->user?->location ?? 'Location not set',
                     'rating' => (float) ($shop->rating ?? 0),
-                    'logo_url' => $shop->logoImage
-                        ? route('shop.images.show', ['shopImage' => $shop->logoImage->image_id])
-                        : null,
+                    'logo_url' => $shop->logoImage?->url('logo'),
+                    // The shop's first photo, shown as its card cover.
+                    'cover_url' => $shop->coverImage?->url('cover'),
                 ];
             });
 

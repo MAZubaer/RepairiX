@@ -1,132 +1,81 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <Navbar v-if="role === null" />
-    <CustomerNavbar v-else-if="role === 'customer'" />
-    <ShopNavbar v-else-if="role === 'shop'" />
-    <Navbar v-else />
-
-    <main class="flex-1 py-12 px-4 sm:px-6">
-      <div class="mx-auto w-full max-w-6xl">
-        <section class="text-center">
-          <h1 class="text-4xl md:text-6xl font-extrabold text-dark">About RepairiX</h1>
-          <p class="mt-4 text-lg text-slate-600">
-            Connecting customers with trusted repair shops for mobile devices.
-          </p>
-        </section>
-
-        <section class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <article class="about-card">
-            <h2 class="text-4xl font-bold text-dark">Our Mission</h2>
-            <p class="mt-4 text-slate-600 text-lg leading-8">
-              We aim to simplify the process of repairing mobile phones by connecting you with
-              verified, professional repair shops in your area.
-            </p>
-          </article>
-
-          <article class="about-card">
-            <h2 class="text-4xl font-bold text-dark">Why Choose Us</h2>
-            <p class="mt-4 text-slate-600 text-lg leading-8">
-              RepairiX provides a seamless platform for customers and repair shops with transparent pricing,
-              quality service, and dependable turnaround for mobile repairs.
-            </p>
-          </article>
-        </section>
-
-        <section class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <article class="feature-item">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <rect x="7" y="2" width="10" height="20" rx="2" stroke-width="2" />
-                <circle cx="12" cy="18" r="1" stroke-width="2" />
-              </svg>
-            </div>
-            <h3 class="feature-title">Mobile Phones</h3>
-            <p class="feature-text">Focused support for smartphone repair needs.</p>
-          </article>
-
-          <article class="feature-item">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3a1 1 0 011.4 1.4l-8 8a1 1 0 01-.46.26l-3 1a1 1 0 01-1.26-1.26l1-3a1 1 0 01.26-.46l8-8z" />
-              </svg>
-            </div>
-            <h3 class="feature-title">Expert Repairs</h3>
-            <p class="feature-text">Verified and skilled technicians.</p>
-          </article>
-
-          <article class="feature-item">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <circle cx="12" cy="12" r="9" stroke-width="2" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 2" />
-              </svg>
-            </div>
-            <h3 class="feature-title">Fast Service</h3>
-            <p class="feature-text">Quick turnaround times.</p>
-          </article>
-
-          <article class="feature-item">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 class="feature-title">Quality Assured</h3>
-            <p class="feature-text">Guaranteed workmanship.</p>
-          </article>
-        </section>
+  <AppLayout title="About" bare>
+    <section class="relative overflow-hidden bg-white">
+      <div class="pointer-events-none absolute -top-40 left-1/2 size-[600px] -translate-x-1/2 rounded-full bg-brand-100/60 blur-3xl" />
+      <div class="container-page relative py-20 text-center sm:py-24">
+        <span class="eyebrow">About RepairiX</span>
+        <h1 class="mx-auto mt-6 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+          Making phone repair honest, simple and trackable.
+        </h1>
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
+          We connect people who need a repair with professional shops nearby, and give both sides one clear place to manage the job.
+        </p>
       </div>
-    </main>
-  </div>
+    </section>
+
+    <section class="py-16 sm:py-20">
+      <div class="container-page grid gap-6 md:grid-cols-2">
+        <article class="card p-8">
+          <span class="grid size-12 place-items-center rounded-2xl bg-brand-50 text-brand-600">
+            <Target class="size-6" />
+          </span>
+          <h2 class="mt-6 text-2xl font-bold text-slate-900">Our mission</h2>
+          <p class="mt-3 leading-relaxed text-slate-600">
+            To simplify repairing mobile phones by connecting you with verified, professional repair shops in your area,
+            with no guesswork about what's wrong or what it will cost.
+          </p>
+        </article>
+        <article class="card p-8">
+          <span class="grid size-12 place-items-center rounded-2xl bg-sky-50 text-sky-600">
+            <Heart class="size-6" />
+          </span>
+          <h2 class="mt-6 text-2xl font-bold text-slate-900">Why choose us</h2>
+          <p class="mt-3 leading-relaxed text-slate-600">
+            RepairiX gives customers and shops one seamless platform: transparent pricing, quality service, and dependable
+            turnaround, with every status change visible as it happens.
+          </p>
+        </article>
+      </div>
+
+      <div class="container-page mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div v-for="feature in features" :key="feature.title" class="card card-hover p-6">
+          <component :is="feature.icon" class="size-7 text-brand-600" />
+          <h3 class="mt-5 font-bold text-slate-900">{{ feature.title }}</h3>
+          <p class="mt-1.5 text-sm text-slate-500">{{ feature.text }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="!user" class="pb-20">
+      <div class="container-page">
+        <div class="card flex flex-col items-center justify-between gap-6 bg-gradient-to-r from-brand-600 to-brand-700 p-10 text-center ring-0 sm:flex-row sm:text-left">
+          <div>
+            <h2 class="text-2xl font-extrabold text-white">Ready to get started?</h2>
+            <p class="mt-1 text-brand-100">Create a free customer account or bring your shop online.</p>
+          </div>
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <Link href="/register/customer" class="btn btn-lg bg-white text-brand-700 hover:bg-brand-50">I need a repair</Link>
+            <Link href="/register/shop" class="btn btn-lg bg-brand-800/60 text-white ring-1 ring-white/30 hover:bg-brand-800">I run a shop</Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  </AppLayout>
 </template>
 
 <script setup>
-import Navbar from '../Components/Navbar.vue'
-import CustomerNavbar from '../Components/CustomerNavbar.vue'
-import ShopNavbar from '../Components/ShopNavbar.vue'
+import { computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
+import { BadgeCheck, Heart, Smartphone, Target, Wrench, Zap } from 'lucide-vue-next'
+import AppLayout from '../Layouts/AppLayout.vue'
 
-defineProps({
-  role: {
-    type: String,
-    default: null,
-  },
-})
+const page = usePage()
+const user = computed(() => page.props.auth?.user || null)
+
+const features = [
+  { icon: Smartphone, title: 'Mobile phones', text: 'Focused support for smartphone repair needs.' },
+  { icon: Wrench, title: 'Expert repairs', text: 'Verified and skilled technicians.' },
+  { icon: Zap, title: 'Fast service', text: 'Quick turnaround with live progress.' },
+  { icon: BadgeCheck, title: 'Rated by customers', text: 'Every delivered repair can be reviewed.' },
+]
 </script>
-
-<style scoped>
-.about-card {
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.72);
-  padding: 2rem;
-}
-
-.feature-item {
-  text-align: center;
-}
-
-.feature-icon {
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4.25rem;
-  height: 4.25rem;
-  border-radius: 999px;
-  color: #0d9488;
-  background: rgba(20, 184, 166, 0.15);
-}
-
-.feature-title {
-  margin-top: 1rem;
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.feature-text {
-  margin-top: 0.35rem;
-  color: #64748b;
-  font-size: 1.05rem;
-}
-</style>

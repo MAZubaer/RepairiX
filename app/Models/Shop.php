@@ -42,11 +42,26 @@ class Shop extends Model
 
     public function logoImage()
     {
-        return $this->hasOne(ShopImage::class, 'shop_id', 'shop_id')->where('type', 'logo');
+        return $this->hasOne(ShopImage::class, 'shop_id', 'shop_id')
+            ->where('type', 'logo')
+            ->latest('image_id');
     }
 
+    /** Photos in the order the shop arranged them (first photo = cover). */
     public function galleryImages()
     {
-        return $this->hasMany(ShopImage::class, 'shop_id', 'shop_id')->where('type', 'gallery');
+        return $this->hasMany(ShopImage::class, 'shop_id', 'shop_id')
+            ->where('type', 'gallery')
+            ->orderBy('sort_order')
+            ->orderBy('image_id');
+    }
+
+    /** The first photo, shown as the cover on the shop's card. */
+    public function coverImage()
+    {
+        return $this->hasOne(ShopImage::class, 'shop_id', 'shop_id')
+            ->where('type', 'gallery')
+            ->orderBy('sort_order')
+            ->orderBy('image_id');
     }
 }

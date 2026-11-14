@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\CustomerRegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ShopRegisterController;
+use App\Http\Controllers\ShopPhotoController;
 use App\Http\Controllers\ShopProfileController;
 use App\Http\Controllers\ShopDashboardController;
 use App\Http\Controllers\CustomerDashboardController;
@@ -23,13 +24,8 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
-Route::get('/about', function () {
-    $user = Auth::user();
-
-    return Inertia::render('About', [
-        'role' => $user?->role,
-    ]);
-})->name('about');
+// The navbar reads the user from the shared `auth` prop, so About needs no props of its own.
+Route::inertia('/about', 'About')->name('about');
 
 // Guest-only pages: registration and login
 Route::middleware('guest')->group(function () {
@@ -146,6 +142,9 @@ Route::get('/shop/images/{shopImage}', [ShopProfileController::class, 'showImage
     ->name('shop.images.show')
     ->middleware('auth');
 
-Route::delete('/shop/images/{shopImage}', [ShopProfileController::class, 'destroyImage'])
-    ->name('shop.images.destroy')
-    ->middleware(['auth', 'shop.subscription']);
+Route::middleware(['auth', 'shop.subscription'])->group(function () {
+    Route::get('/shop/photos', [ShopPhotoController::class, 'index'])->name('shop.photos.index');
+    Route::post('/shop/photos', [ShopPhotoController::class, 'store'])->name('shop.photos.store');
+    Route::post('/shop/photos/reorder', [ShopPhotoController::class, 'reorder'])->name('shop.photos.reorder');
+    Route::delete('/shop/images/{shopImage}', [ShopPhotoController::class, 'destroy'])->name('shop.images.destroy');
+});

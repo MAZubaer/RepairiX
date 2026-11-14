@@ -1,66 +1,87 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <Navbar />
+  <AuthLayout
+    title="Register your shop"
+    heading="Grow your repair business with RepairiX."
+    tagline="Receive repair requests from nearby customers and manage every job from one dashboard."
+    :points="[
+      'Get discovered by customers looking for repairs',
+      'Accept, diagnose, quote and update jobs in one place',
+      'Customers get automatic status emails',
+    ]"
+  >
+    <AccountTypeSwitch active="shop" class="mb-8" />
 
-    <main class="flex-1 flex items-center justify-center">
-      <div class="w-full max-w-md px-6 py-12">
-        <h2 class="text-3xl font-extrabold text-center">Register as Shop</h2>
-        <p class="text-center text-gray-600 mb-6">Join our network of repair professionals</p>
+    <div class="mb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Register your shop</h1>
+      <p class="mt-2 text-slate-500">After signing up you'll pick a monthly or yearly plan to go live.</p>
+    </div>
 
-        <form @submit.prevent="submit" class="space-y-4 bg-white p-6 rounded-lg shadow-sm border">
-          <div v-if="errors.server" class="text-red-600 text-sm mb-2">{{ errors.server }}</div>
-          <div>
-            <label class="block text-sm font-semibold mb-1">Shop Name</label>
-            <input name="shop_name" v-model="form.shop_name" required type="text" :class="['form-input', hasError('shop_name') ? 'border-red-500' : '']" placeholder="Enter your shop name" />
-            <div v-if="hasError('shop_name')" class="text-red-500 text-sm mt-1">{{ errors.shop_name }}</div>
-          </div>
+    <div v-if="errors.server" class="mb-5 flex items-start gap-3 rounded-xl bg-rose-50 p-4 text-sm text-rose-700 ring-1 ring-rose-200">
+      <CircleAlert class="mt-0.5 size-4 shrink-0" />
+      {{ errors.server }}
+    </div>
 
-          <div>
-            <label class="block text-sm font-semibold mb-1">Business Email</label>
-            <input name="email" v-model="form.email" required type="email" :class="['form-input', hasError('email') ? 'border-red-500' : '']" placeholder="Enter your business email" />
-            <div v-if="hasError('email')" class="text-red-500 text-sm mt-1">{{ errors.email }}</div>
-          </div>
+    <form class="space-y-4" novalidate @submit.prevent="submit">
+      <FormField id="shop_name" label="Shop name" :icon="Store" :error="errors.shop_name">
+        <template #default="{ id, inputClass }">
+          <input :id="id" v-model="form.shop_name" name="shop_name" type="text" autocomplete="organization" required :class="inputClass" placeholder="Enter your shop name" />
+        </template>
+      </FormField>
 
-          <div>
-            <label class="block text-sm font-semibold mb-1">Phone Number</label>
-            <input name="phone" v-model="form.phone" required type="text" :class="['form-input', hasError('phone') ? 'border-red-500' : '']" placeholder="Enter your phone number" />
-            <div v-if="hasError('phone')" class="text-red-500 text-sm mt-1">{{ errors.phone }}</div>
-          </div>
+      <FormField id="email" label="Business email" :icon="Mail" :error="errors.email">
+        <template #default="{ id, inputClass }">
+          <input :id="id" v-model="form.email" name="email" type="email" autocomplete="email" required :class="inputClass" placeholder="Enter your business email" />
+        </template>
+      </FormField>
 
-          <div>
-            <label class="block text-sm font-semibold mb-1">Shop Address</label>
-            <input name="shop_address" v-model="form.shop_address" required type="text" :class="['form-input', hasError('shop_address') ? 'border-red-500' : '']" placeholder="Enter your shop address" />
-            <div v-if="hasError('shop_address')" class="text-red-500 text-sm mt-1">{{ errors.shop_address }}</div>
-          </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <FormField id="phone" label="Phone number" :icon="Phone" :error="errors.phone">
+          <template #default="{ id, inputClass }">
+            <input :id="id" v-model="form.phone" name="phone" type="tel" autocomplete="tel" required :class="inputClass" placeholder="Enter your phone number" />
+          </template>
+        </FormField>
 
-          <div>
-            <label class="block text-sm font-semibold mb-1">Password</label>
-            <input name="password" v-model="form.password" required minlength="8" type="password" :class="['form-input', hasError('password') ? 'border-red-500' : '']" placeholder="Create a password" />
-            <div class="text-gray-500 text-xs mt-1">Minimum 8 characters</div>
-            <div v-if="hasError('password')" class="text-red-500 text-sm mt-1">{{ errors.password }}</div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold mb-1">Confirm Password</label>
-            <input name="password_confirmation" v-model="form.password_confirmation" required minlength="8" type="password" :class="['form-input', hasError('password_confirmation') ? 'border-red-500' : '']" placeholder="Confirm your password" />
-            <div v-if="hasError('password_confirmation')" class="text-red-500 text-sm mt-1">{{ errors.password_confirmation }}</div>
-          </div>
-
-          <div>
-            <button type="submit" class="btn-primary w-full" :disabled="form.processing">Create Shop Account</button>
-          </div>
-        </form>
+        <FormField id="shop_address" label="Shop address" :icon="MapPin" :error="errors.shop_address">
+          <template #default="{ id, inputClass }">
+            <input :id="id" v-model="form.shop_address" name="shop_address" type="text" autocomplete="street-address" required :class="inputClass" placeholder="Enter your shop address" />
+          </template>
+        </FormField>
       </div>
-    </main>
 
-    <footer class="h-12"></footer>
-  </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <FormField id="password" label="Password" :icon="Lock" :error="errors.password" hint="At least 8 characters">
+          <template #default="{ id, inputClass }">
+            <input :id="id" v-model="form.password" name="password" type="password" autocomplete="new-password" required minlength="8" :class="inputClass" placeholder="Create a password" />
+          </template>
+        </FormField>
+
+        <FormField id="password_confirmation" label="Confirm password" :icon="Lock" :error="errors.password_confirmation">
+          <template #default="{ id, inputClass }">
+            <input :id="id" v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required minlength="8" :class="inputClass" placeholder="Confirm your password" />
+          </template>
+        </FormField>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg mt-2 w-full" :disabled="form.processing">
+        <LoaderCircle v-if="form.processing" class="size-5 animate-spin" />
+        Create shop account
+      </button>
+    </form>
+
+    <p class="mt-8 text-center text-sm text-slate-500">
+      Already registered?
+      <Link href="/login" class="font-semibold text-brand-700 hover:text-brand-800">Log in</Link>
+    </p>
+  </AuthLayout>
 </template>
 
 <script setup>
-import Navbar from '../Components/Navbar.vue'
-import { useForm } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import { Link, useForm } from '@inertiajs/vue3'
+import { CircleAlert, LoaderCircle, Lock, Mail, MapPin, Phone, Store } from 'lucide-vue-next'
+import AuthLayout from '../Layouts/AuthLayout.vue'
+import AccountTypeSwitch from '../Components/AccountTypeSwitch.vue'
+import FormField from '../Components/FormField.vue'
 
 const form = useForm({
   shop_name: '',
@@ -78,13 +99,4 @@ function submit() {
     onError: () => form.reset('password', 'password_confirmation'),
   })
 }
-
-function hasError(field) {
-  return Boolean(errors.value[field])
-}
 </script>
-
-<style scoped>
-.form-input{ width:100%; padding:.75rem 1rem; border:1px solid rgba(15,23,42,0.08); border-radius:.5rem; }
-.form-input:focus{ outline:none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(20,184,166,0.08); }
-</style>

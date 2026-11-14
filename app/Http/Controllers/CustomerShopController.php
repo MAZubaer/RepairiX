@@ -29,11 +29,9 @@ class CustomerShopController extends Controller
 
         $shop->load([
             'user:id,name,location',
-            'logoImage:image_id,shop_id,image_path',
-            'galleryImages:image_id,shop_id,image_path',
+            'logoImage',
+            'galleryImages',
         ]);
-
-        $gallery = $shop->galleryImages->sortByDesc('image_id')->values();
 
         return Inertia::render('Customer/ShopDetails', [
             'shop' => [
@@ -46,15 +44,9 @@ class CustomerShopController extends Controller
             ],
             'logo' => $shop->logoImage ? [
                 'image_id' => $shop->logoImage->image_id,
-                'url' => route('shop.images.show', ['shopImage' => $shop->logoImage->image_id]),
+                'url' => $shop->logoImage->url('logo'),
             ] : null,
-            'gallery' => $gallery->map(function ($img) {
-                return [
-                    'image_id' => $img->image_id,
-                    'url' => route('shop.images.show', ['shopImage' => $img->image_id]),
-                ];
-            }),
-            'requestSent' => (bool) $request->session()->get('request_sent', false),
+            'gallery' => $shop->galleryImages->map->toGalleryArray()->values(),
         ]);
     }
 
@@ -100,6 +92,6 @@ class CustomerShopController extends Controller
 
         return redirect()
             ->route('customer.shops.show', ['shop' => $shop->shop_id])
-            ->with('request_sent', true);
+            ->with('success', 'Request sent! You can follow it under My repairs.');
     }
 }

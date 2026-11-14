@@ -62,6 +62,6 @@ class CustomerManagementController extends Controller
             $customer->delete();
         }
 
-        return back();
+        return back()->with('success', 'Customer deleted.');
     }
 }

@@ -20,15 +20,20 @@ return [
     | Shop Images Disk
     |--------------------------------------------------------------------------
     |
-    | Disk used for shop logos and gallery uploads. "public" keeps files on the
-    | server's local disk, which is wiped on every redeploy of a container host
-    | such as Render. In production, point this at persistent storage: either
-    | "s3" (needs league/flysystem-aws-s3-v3 and the AWS_* variables) or the
-    | "public" disk on a mounted persistent volume.
+    | Where NEW shop logos and photos are uploaded:
+    |
+    |  - "cloudinary": Cloudinary CDN (recommended in production). Needs
+    |    CLOUDINARY_URL. Images survive redeploys and are served resized
+    |    and in modern formats straight from the CDN.
+    |  - "public" (or any Laravel disk): the server's own storage. On container
+    |    hosts such as Render this is wiped on every redeploy.
+    |
+    | Defaults to Cloudinary whenever CLOUDINARY_URL is set. Each image row
+    | remembers its own disk, so switching later never breaks old images.
     |
     */
 
-    'shop_images_disk' => env('SHOP_IMAGES_DISK', 'public'),
+    'shop_images_disk' => env('SHOP_IMAGES_DISK', env('CLOUDINARY_URL') ? 'cloudinary' : 'public'),
 
     /*
     |--------------------------------------------------------------------------

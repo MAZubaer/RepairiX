@@ -1,48 +1,45 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <CustomerNavbar />
+  <AppLayout title="Notifications">
+    <div class="mx-auto max-w-3xl">
+      <PageHeader title="Notifications" subtitle="Status updates from the shops working on your repairs." />
 
-    <main class="flex-1 py-10">
-      <div class="w-full max-w-5xl mx-auto px-6">
-        <h1 class="text-5xl font-extrabold leading-tight">Notifications</h1>
-        <p class="mt-2 text-slate-600 text-lg">Latest updates from shop status changes</p>
-
-        <section class="mt-6 space-y-3">
-          <article
-            v-for="note in notifications"
-            :key="note.id"
-            class="rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <p class="text-[15px] text-slate-800 leading-relaxed">{{ note.message }}</p>
-              <span class="inline-flex shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                {{ note.relative_time || note.time }}
-              </span>
-            </div>
-            <p class="mt-2 text-xs text-slate-500">{{ note.time }}</p>
-          </article>
-
-          <div
-            v-if="!notifications.length"
-            class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-slate-500"
-          >
-            No notifications yet.
+      <div v-if="notifications.length" class="card divide-y divide-slate-100">
+        <div v-for="note in notifications" :key="note.id" class="flex gap-4 p-5 transition hover:bg-slate-50/70">
+          <span class="grid size-10 shrink-0 place-items-center rounded-full" :class="toneFor(note.message).wrap">
+            <component :is="toneFor(note.message).icon" class="size-5" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-slate-800">{{ note.message }}</p>
+            <p class="mt-1 text-xs text-slate-500" :title="note.time">{{ note.relative_time || note.time }}</p>
           </div>
-        </section>
+        </div>
       </div>
-    </main>
 
-    <footer class="h-12"></footer>
-  </div>
+      <div v-else class="card">
+        <EmptyState :icon="BellOff" title="You're all caught up" description="When a shop updates one of your repairs, you'll see it here." />
+      </div>
+    </div>
+  </AppLayout>
 </template>
 
 <script setup>
-import CustomerNavbar from '../../Components/CustomerNavbar.vue'
+import { Bell, BellOff, CircleCheck, CircleX, PackageCheck, Truck, Wrench } from 'lucide-vue-next'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import EmptyState from '../../Components/EmptyState.vue'
+import PageHeader from '../../Components/PageHeader.vue'
 
 defineProps({
   notifications: { type: Array, default: () => [] },
 })
-</script>
 
-<style scoped>
-</style>
+// Messages come from the server as text, so pick an icon from their wording.
+function toneFor(message) {
+  const m = String(message).toLowerCase()
+  if (m.includes('rejected')) return { icon: CircleX, wrap: 'bg-rose-50 text-rose-600' }
+  if (m.includes('sent from shop')) return { icon: Truck, wrap: 'bg-teal-50 text-teal-600' }
+  if (m.includes('completed')) return { icon: PackageCheck, wrap: 'bg-violet-50 text-violet-600' }
+  if (m.includes('in progress')) return { icon: Wrench, wrap: 'bg-indigo-50 text-indigo-600' }
+  if (m.includes('accepted')) return { icon: CircleCheck, wrap: 'bg-sky-50 text-sky-600' }
+  return { icon: Bell, wrap: 'bg-slate-100 text-slate-600' }
+}
+</script>

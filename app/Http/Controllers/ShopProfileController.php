@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateShopProfileRequest;
 use App\Models\Shop;
 use App\Models\ShopImage;
-use Illuminate\Filesystem\FilesystemAdapter;
+use App\Services\Images\ShopImageStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +13,10 @@ use Inertia\Inertia;
 
 class ShopProfileController extends Controller
 {
+    public function __construct(private readonly ShopImageStorage $images)
+    {
+    }
+
     public function edit()
     {
         $user = auth()->user();
@@ -20,18 +24,8 @@ class ShopProfileController extends Controller
             abort(403);
         }
 
-        $shop = Shop::firstOrCreate(
-            ['user_id' => $user->id],
-            [
-                'subscription_status' => 'not_activated',
-                'expiry_date' => null,
-                'description' => null,
-                'rating' => 0,
-            ]
-        );
-
-        $logo = $shop->logoImage()->latest('image_id')->first();
-        $gallery = $shop->galleryImages()->orderByDesc('image_id')->get(['image_id', 'image_path', 'type']);
+        $shop = $this->shopFor($user);
+        $logo = $shop->logoImage()->first();
 
         return Inertia::render('Shop/EditProfile', [
             'profile' => [
@@ -44,23 +38,20 @@ class ShopProfileController extends Controller
             ],
             'logo' => $logo ? [
                 'image_id' => $logo->image_id,
-                'image_path' => $logo->image_path,
-                'url' => route('shop.images.show', ['shopImage' => $logo->image_id]),
+                'url' => $logo->url('logo'),
             ] : null,
-            'gallery' => $gallery->map(function ($img) {
-                return [
-                    'image_id' => $img->image_id,
-                    'image_path' => $img->image_path,
-                    'url' => route('shop.images.show', ['shopImage' => $img->image_id]),
-                ];
-            }),
+            'photoCount' => $shop->galleryImages()->count(),
         ]);
     }
 
+    /**
+     * Serve an image stored on a local disk. Cloudinary images are public CDN URLs,
+     * so requests for those are simply redirected there.
+     */
     public function showImage(Request $request, ShopImage $shopImage)
     {
         $user = $request->user();
-        if (! $user || ! in_array($user->role, ['shop', 'customer'], true)) {
+        if (! $user || ! in_array($user->role, ['shop', 'customer', 'admin'], true)) {
             abort(403);
         }
 
@@ -71,37 +62,17 @@ class ShopProfileController extends Controller
             }
         }
 
-        $disk = $this->imageDisk();
+        if ($shopImage->disk === ShopImageStorage::CLOUDINARY) {
+            return redirect()->away($shopImage->url($request->query('variant', 'full')));
+        }
+
+        $disk = Storage::disk($shopImage->disk ?: 'public');
 
         if (! $shopImage->image_path || ! $disk->exists($shopImage->image_path)) {
             abort(404);
         }
 
-        // response() streams from any disk (local or S3), unlike response()->file().
         return $disk->response($shopImage->image_path);
-    }
-
-    public function destroyImage(Request $request, ShopImage $shopImage)
-    {
-        $user = $request->user();
-        if (! $user || $user->role !== 'shop') {
-            abort(403);
-        }
-
-        $shop = $shopImage->shop;
-        if (! $shop || (int) $shop->user_id !== (int) $user->id) {
-            abort(403);
-        }
-
-        DB::transaction(function () use ($shopImage) {
-            if ($shopImage->image_path) {
-                $this->imageDisk()->delete($shopImage->image_path);
-            }
-
-            $shopImage->delete();
-        });
-
-        return redirect()->route('shop.edit')->with('success', 'Image deleted successfully.');
     }
 
     public function update(UpdateShopProfileRequest $request)
@@ -112,18 +83,9 @@ class ShopProfileController extends Controller
         }
 
         $validated = $request->validated();
+        $shop = $this->shopFor($user);
 
-        DB::transaction(function () use ($user, $validated, $request) {
-            $shop = Shop::firstOrCreate(
-                ['user_id' => $user->id],
-                [
-                    'subscription_status' => 'not_activated',
-                    'expiry_date' => null,
-                    'description' => null,
-                    'rating' => 0,
-                ]
-            );
-
+        DB::transaction(function () use ($user, $shop, $validated) {
             $user->update([
                 'name' => $validated['shop_name'],
                 'phone' => $validated['phone'],
@@ -136,54 +98,28 @@ class ShopProfileController extends Controller
                 // Keep previous description behavior aligned with address.
                 'description' => $validated['shop_address'],
             ]);
-
-            if ($request->hasFile('logo')) {
-                $oldLogoPaths = ShopImage::query()
-                    ->where('shop_id', $shop->shop_id)
-                    ->where('type', 'logo')
-                    ->pluck('image_path');
-
-                foreach ($oldLogoPaths as $oldLogoPath) {
-                    if ($oldLogoPath) {
-                        $this->imageDisk()->delete($oldLogoPath);
-                    }
-                }
-
-                ShopImage::query()
-                    ->where('shop_id', $shop->shop_id)
-                    ->where('type', 'logo')
-                    ->delete();
-
-                $logoPath = $request->file('logo')->store('shop_images/logos', $this->imageDiskName());
-                ShopImage::create([
-                    'shop_id' => $shop->shop_id,
-                    'image_path' => $logoPath,
-                    'type' => 'logo',
-                ]);
-            }
-
-            if ($request->hasFile('gallery_images')) {
-                foreach ($request->file('gallery_images') as $galleryImage) {
-                    $galleryPath = $galleryImage->store('shop_images/gallery', $this->imageDiskName());
-                    ShopImage::create([
-                        'shop_id' => $shop->shop_id,
-                        'image_path' => $galleryPath,
-                        'type' => 'gallery',
-                    ]);
-                }
-            }
         });
+
+        // Uploads happen outside the DB transaction: a remote upload can't be rolled back anyway.
+        if ($request->hasFile('logo')) {
+            $oldLogos = $shop->images()->where('type', 'logo')->get();
+            $this->images->store($shop, $request->file('logo'), 'logo');
+            $oldLogos->each(fn (ShopImage $old) => $this->images->delete($old));
+        }
 
         return redirect()->route('shop.edit')->with('success', 'Profile updated successfully.');
     }
 
-    private function imageDiskName(): string
+    private function shopFor($user): Shop
     {
-        return (string) config('filesystems.shop_images_disk', 'public');
-    }
-
-    private function imageDisk(): FilesystemAdapter
-    {
-        return Storage::disk($this->imageDiskName());
+        return Shop::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'subscription_status' => 'not_activated',
+                'expiry_date' => null,
+                'description' => null,
+                'rating' => 0,
+            ]
+        );
     }
 }

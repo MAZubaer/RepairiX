@@ -1,131 +1,69 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <AdminNavbar />
+  <AppLayout title="Admin overview">
+    <PageHeader eyebrow="Admin" title="Platform overview" subtitle="Key numbers across shops, customers and repairs." />
 
-    <main class="flex-1 py-10">
-      <div class="w-full max-w-7xl mx-auto px-6">
-        <h1 class="text-5xl font-extrabold leading-tight">Dashboard Overview</h1>
-        <p class="mt-2 text-2xl text-gray-600">Monitor your platform's key metrics and performance</p>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StatCard label="Repair shops" :value="formatNumber(stats.totalDealers)" :icon="Store" />
+      <StatCard label="Customers" :value="formatNumber(stats.totalCustomers)" :icon="Users" tone="sky" />
+      <StatCard label="Repairs completed" :value="formatNumber(stats.totalRepairsCompleted)" :icon="PackageCheck" tone="emerald" />
+      <StatCard label="Total Repair Value" :value="formatMoney(stats.totalRevenue, '৳0')" :icon="Banknote" tone="amber" hint="Sum of costs on finished repairs" />
+    </div>
 
-        <section class="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          <article class="summary-box">
-            <div class="summary-head">
-              <div>
-                <p class="summary-label">Total Dealers</p>
-                <p class="summary-value">{{ stats.totalDealers }}</p>
-              </div>
-              <span class="summary-icon">🏬</span>
-            </div>
-          </article>
+    <div class="mt-6 grid gap-6 lg:grid-cols-3">
+      <section class="card p-6">
+        <h2 class="font-bold text-slate-900">Subscriptions</h2>
+        <p class="mt-1 text-sm text-slate-500">Shops with an active plan.</p>
+        <div class="mt-6 flex items-end gap-2">
+          <span class="text-4xl font-extrabold text-slate-900">{{ stats.activeSubscriptions }}</span>
+          <span class="mb-1 text-sm text-slate-500">of {{ stats.totalDealers }} shops</span>
+        </div>
+        <div class="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-100">
+          <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-600 transition-all" :style="{ width: `${activeShare}%` }" />
+        </div>
+        <p class="mt-2 text-xs font-medium text-slate-500">{{ activeShare }}% active</p>
+      </section>
 
-          <article class="summary-box">
-            <div class="summary-head">
-              <div>
-                <p class="summary-label">Active Subscriptions</p>
-                <p class="summary-value">{{ stats.activeSubscriptions }}</p>
-              </div>
-              <span class="summary-icon">✔</span>
-            </div>
-          </article>
-
-          <article class="summary-box">
-            <div class="summary-head">
-              <div>
-                <p class="summary-label">Total Customers</p>
-                <p class="summary-value">{{ stats.totalCustomers }}</p>
-              </div>
-              <span class="summary-icon">👥</span>
-            </div>
-          </article>
-
-          <article class="summary-box">
-            <div class="summary-head">
-              <div>
-                <p class="summary-label">Total Repairs Completed</p>
-                <p class="summary-value">{{ stats.totalRepairsCompleted }}</p>
-              </div>
-              <span class="summary-icon">🔧</span>
-            </div>
-          </article>
-
-          <article class="summary-box">
-            <div class="summary-head">
-              <div>
-                <p class="summary-label">Total Repair Value</p>
-                <p class="summary-value">৳{{ formatAmount(stats.totalRevenue) }}</p>
-              </div>
-              <span class="summary-icon warning">৳</span>
-            </div>
-          </article>
-        </section>
-      </div>
-    </main>
-
-    <footer class="h-12"></footer>
-  </div>
+      <section class="grid gap-4 sm:grid-cols-3 lg:col-span-2">
+        <Link v-for="link in quickLinks" :key="link.href" :href="link.href" class="card card-hover group flex flex-col p-6">
+          <span class="grid size-11 place-items-center rounded-xl bg-slate-900 text-white">
+            <component :is="link.icon" class="size-5" />
+          </span>
+          <p class="mt-5 font-bold text-slate-900">{{ link.title }}</p>
+          <p class="mt-1 flex-1 text-sm text-slate-500">{{ link.text }}</p>
+          <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
+            Open
+            <ArrowRight class="size-4 transition group-hover:translate-x-0.5" />
+          </span>
+        </Link>
+      </section>
+    </div>
+  </AppLayout>
 </template>
 
 <script setup>
-import AdminNavbar from '../../Components/AdminNavbar.vue'
+import { computed } from 'vue'
+import { Link } from '@inertiajs/vue3'
+import { ArrowRight, Banknote, ClipboardList, PackageCheck, Store, Users } from 'lucide-vue-next'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import PageHeader from '../../Components/PageHeader.vue'
+import StatCard from '../../Components/StatCard.vue'
+import { formatMoney, formatNumber } from '../../lib/format'
 
-defineProps({
+const props = defineProps({
   stats: {
     type: Object,
-    default: () => ({
-      totalDealers: 0,
-      activeSubscriptions: 0,
-      totalCustomers: 0,
-      totalRepairsCompleted: 0,
-      totalRevenue: 0,
-    }),
+    default: () => ({ totalDealers: 0, activeSubscriptions: 0, totalCustomers: 0, totalRepairsCompleted: 0, totalRevenue: 0 }),
   },
 })
 
-function formatAmount(amount) {
-  return Number(amount || 0).toLocaleString('en-US')
-}
+const activeShare = computed(() => {
+  const total = Number(props.stats.totalDealers) || 0
+  return total ? Math.round((Number(props.stats.activeSubscriptions) / total) * 100) : 0
+})
+
+const quickLinks = [
+  { href: '/admin/shops', icon: Store, title: 'Shops', text: 'Activate shops and manage plans and expiry dates.' },
+  { href: '/admin/service-requests', icon: ClipboardList, title: 'Requests', text: 'Every repair request on the platform.' },
+  { href: '/admin/customers', icon: Users, title: 'Customers', text: 'Registered customers and their activity.' },
+]
 </script>
-
-<style scoped>
-.summary-box {
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 0.9rem;
-  background: #fff;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
-}
-
-.summary-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.summary-label {
-  color: #475569;
-  font-size: 1.05rem;
-}
-
-.summary-value {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-top: 0.3rem;
-}
-
-.summary-icon {
-  width: 3.2rem;
-  height: 3.2rem;
-  border-radius: 0.8rem;
-  background: #14b8a6;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.summary-icon.warning {
-  background: #f59e0b;
-}
-</style>

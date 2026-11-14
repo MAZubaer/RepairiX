@@ -1,78 +1,98 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <AdminNavbar />
+  <AppLayout title="Customers">
+    <PageHeader eyebrow="Admin" title="Customers" subtitle="Everyone registered as a customer, with their repair activity." />
 
-    <main class="flex-1 py-10">
-      <div class="w-full max-w-7xl mx-auto px-6">
-        <h1 class="text-5xl font-extrabold leading-tight">Customer List</h1>
-        <p class="mt-2 text-2xl text-gray-600">Manage all registered customers on the platform</p>
+    <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StatCard label="Customers" :value="summary.total_customers" :icon="Users" tone="sky" />
+      <StatCard label="Total requests" :value="summary.total_requests" :icon="ClipboardList" />
+      <StatCard label="Active requests" :value="summary.active_requests" :icon="Wrench" tone="amber" />
+      <StatCard label="Completed requests" :value="summary.completed_requests" :icon="PackageCheck" tone="emerald" />
+    </div>
 
-        <section class="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <article class="summary-box"><div class="summary-label">Total Customers</div><div class="summary-value">{{ summary.total_customers }}</div></article>
-          <article class="summary-box"><div class="summary-label">Total Requests</div><div class="summary-value text-teal-600">{{ summary.total_requests }}</div></article>
-          <article class="summary-box"><div class="summary-label">Active Requests</div><div class="summary-value text-amber-600">{{ summary.active_requests }}</div></article>
-          <article class="summary-box"><div class="summary-label">Completed Requests</div><div class="summary-value text-green-600">{{ summary.completed_requests }}</div></article>
-        </section>
-
-        <div class="mt-6">
-          <div class="relative">
-            <span class="search-icon">🔎</span>
-            <input v-model="search" type="text" class="form-input search-input" placeholder="Search by name, email, phone, or address..." />
-          </div>
+    <div class="card overflow-hidden">
+      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-500">
+          <span class="font-semibold text-slate-800">{{ filteredCustomers.length }}</span> customers
+        </p>
+        <div class="sm:w-80">
+          <SearchInput v-model="search" placeholder="Search name, email, phone or address…" />
         </div>
-
-        <section class="mt-6 rounded-xl border border-slate-300 bg-white overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[1300px] text-left">
-              <thead class="bg-slate-50 border-b border-slate-300">
-                <tr class="text-sm text-slate-700">
-                  <th class="px-4 py-4 font-semibold">Customer ID</th>
-                  <th class="px-4 py-4 font-semibold">Name</th>
-                  <th class="px-4 py-4 font-semibold">Email</th>
-                  <th class="px-4 py-4 font-semibold">Phone</th>
-                  <th class="px-4 py-4 font-semibold">Address</th>
-                  <th class="px-4 py-4 font-semibold">Join Date</th>
-                  <th class="px-4 py-4 font-semibold">Total Requests</th>
-                  <th class="px-4 py-4 font-semibold">Active</th>
-                  <th class="px-4 py-4 font-semibold">Completed</th>
-                  <th class="px-4 py-4 font-semibold">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr v-for="customer in filteredCustomers" :key="customer.customer_id" class="border-b border-slate-200">
-                  <td class="px-4 py-4 text-xl font-semibold">#C{{ String(customer.customer_id).padStart(4, '0') }}</td>
-                  <td class="px-4 py-4 text-2xl font-semibold">{{ customer.name }}</td>
-                  <td class="px-4 py-4 text-lg">{{ customer.email }}</td>
-                  <td class="px-4 py-4 text-lg">{{ customer.phone }}</td>
-                  <td class="px-4 py-4 text-lg">{{ customer.address }}</td>
-                  <td class="px-4 py-4 text-lg">{{ customer.join_date }}</td>
-                  <td class="px-4 py-4 text-xl">{{ customer.total_requests }}</td>
-                  <td class="px-4 py-4 text-xl text-amber-600">{{ customer.active_requests }}</td>
-                  <td class="px-4 py-4 text-xl text-green-600">{{ customer.completed_requests }}</td>
-                  <td class="px-4 py-4">
-                    <button type="button" class="btn-delete" @click="deleteCustomer(customer)">Delete</button>
-                  </td>
-                </tr>
-
-                <tr v-if="!filteredCustomers.length">
-                  <td colspan="10" class="px-4 py-10 text-center text-slate-500">No customer found for this search.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
       </div>
-    </main>
 
-    <footer class="h-12"></footer>
-  </div>
+      <div v-if="filteredCustomers.length" class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Contact</th>
+              <th>Address</th>
+              <th>Joined</th>
+              <th>Requests</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="customer in filteredCustomers" :key="customer.customer_id">
+              <td>
+                <div class="flex items-center gap-3">
+                  <Avatar :name="customer.name" />
+                  <div>
+                    <p class="font-semibold text-slate-900">{{ customer.name }}</p>
+                    <p class="text-xs text-slate-500">#C{{ String(customer.customer_id).padStart(4, '0') }}</p>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <p class="text-slate-700">{{ customer.email }}</p>
+                <p class="text-xs text-slate-500">{{ customer.phone }}</p>
+              </td>
+              <td class="text-slate-600">{{ customer.address }}</td>
+              <td class="whitespace-nowrap text-slate-600">{{ formatDate(customer.join_date) }}</td>
+              <td>
+                <div class="flex items-center gap-1.5 text-xs font-semibold">
+                  <span class="chip bg-slate-100 text-slate-700" title="Total">{{ customer.total_requests }} total</span>
+                  <span v-if="customer.active_requests" class="chip bg-amber-50 text-amber-700" title="Active">{{ customer.active_requests }} active</span>
+                  <span v-if="customer.completed_requests" class="chip bg-emerald-50 text-emerald-700" title="Completed">{{ customer.completed_requests }} done</span>
+                </div>
+              </td>
+              <td class="text-right">
+                <button type="button" class="btn btn-soft-danger btn-sm" @click="pendingDelete = customer">
+                  <Trash2 class="size-3.5" />
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <EmptyState v-else :icon="Users" title="No customers found" description="Try another search." />
+    </div>
+
+    <ConfirmDialog
+      :show="!!pendingDelete"
+      danger
+      :title="`Delete ${pendingDelete?.name || 'customer'}?`"
+      message="This permanently removes the customer account and all of their repair requests."
+      confirm-label="Delete customer"
+      :processing="deleting"
+      @cancel="pendingDelete = null"
+      @confirm="deleteCustomer"
+    />
+  </AppLayout>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
-import AdminNavbar from '../../Components/AdminNavbar.vue'
+import { ClipboardList, PackageCheck, Trash2, Users, Wrench } from 'lucide-vue-next'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import Avatar from '../../Components/Avatar.vue'
+import ConfirmDialog from '../../Components/ConfirmDialog.vue'
+import EmptyState from '../../Components/EmptyState.vue'
+import PageHeader from '../../Components/PageHeader.vue'
+import SearchInput from '../../Components/SearchInput.vue'
+import StatCard from '../../Components/StatCard.vue'
+import { formatDate } from '../../lib/format'
 
 const props = defineProps({
   customers: { type: Array, default: () => [] },
@@ -83,76 +103,24 @@ const props = defineProps({
 })
 
 const search = ref('')
+const pendingDelete = ref(null)
+const deleting = ref(false)
 
 const filteredCustomers = computed(() => {
   const q = search.value.trim().toLowerCase()
   if (!q) return props.customers
-
-  return props.customers.filter((customer) => {
-    return [customer.name, customer.email, customer.phone, customer.address].some((v) =>
-      String(v || '').toLowerCase().includes(q)
-    )
-  })
+  return props.customers.filter((c) => [c.name, c.email, c.phone, c.address].some((v) => String(v || '').toLowerCase().includes(q)))
 })
 
-function deleteCustomer(customer) {
-  const ok = confirm(`Delete ${customer.name}? This will remove customer data from database.`)
-  if (!ok) return
-
-  router.delete(`/admin/customers/${customer.customer_id}`, { preserveScroll: true })
+function deleteCustomer() {
+  if (!pendingDelete.value) return
+  deleting.value = true
+  router.delete(`/admin/customers/${pendingDelete.value.customer_id}`, {
+    preserveScroll: true,
+    onFinish: () => {
+      deleting.value = false
+      pendingDelete.value = null
+    },
+  })
 }
 </script>
-
-<style scoped>
-.form-input {
-  width: 100%;
-  min-height: 2.9rem;
-  padding: 0.6rem 0.85rem;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  border-radius: 0.7rem;
-  background: #fff;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.08);
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.7;
-}
-
-.search-input {
-  padding-left: 2.6rem;
-}
-
-.summary-box {
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 0.9rem;
-  background: #fff;
-  padding: 1.05rem;
-}
-
-.summary-label {
-  color: #475569;
-}
-
-.summary-value {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-top: 0.2rem;
-}
-
-.btn-delete {
-  border-radius: 0.7rem;
-  padding: 0.5rem 0.95rem;
-  font-weight: 700;
-  background: #fee2e2;
-  color: #dc2626;
-}
-</style>

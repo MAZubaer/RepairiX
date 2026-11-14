@@ -1,81 +1,87 @@
 <template>
-  <div class="min-h-screen bg-background text-dark flex flex-col">
-    <AdminNavbar />
+  <AppLayout title="All requests">
+    <PageHeader eyebrow="Admin" title="Service requests" subtitle="Every repair request across the platform." />
 
-    <main class="flex-1 py-10">
-      <div class="w-full max-w-7xl mx-auto px-6">
-        <h1 class="text-5xl font-extrabold leading-tight">All Service Requests</h1>
-        <p class="mt-2 text-2xl text-gray-600">Monitor all repair requests across the platform</p>
-
-        <section class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <article class="summary-box"><div class="summary-label">Total Requests</div><div class="summary-value">{{ summary.total }}</div></article>
-          <article class="summary-box"><div class="summary-label">Pending</div><div class="summary-value text-amber-600">{{ summary.pending }}</div></article>
-          <article class="summary-box"><div class="summary-label">Accepted</div><div class="summary-value text-green-600">{{ summary.accepted }}</div></article>
-          <article class="summary-box"><div class="summary-label">Rejected</div><div class="summary-value text-rose-600">{{ summary.rejected }}</div></article>
-          <article class="summary-box"><div class="summary-label">In Progress</div><div class="summary-value text-yellow-600">{{ summary.in_progress }}</div></article>
-          <article class="summary-box"><div class="summary-label">Completed</div><div class="summary-value text-purple-600">{{ summary.completed }}</div></article>
-          <article class="summary-box"><div class="summary-label">Sent from Shop</div><div class="summary-value text-blue-600">{{ summary.sent_from_shop }}</div></article>
-          <article class="summary-box"><div class="summary-label">Delivered</div><div class="summary-value text-green-600">{{ summary.delivered }}</div></article>
-        </section>
-
-        <div class="mt-6">
-          <div class="relative">
-            <span class="search-icon">🔎</span>
-            <input v-model="search" type="text" class="form-input search-input" placeholder="Search by customer, shop, phone model, or status..." />
-          </div>
+    <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <button
+        v-for="item in summaryItems"
+        :key="item.key"
+        type="button"
+        class="card flex items-center justify-between gap-3 p-4 text-left transition hover:ring-brand-300"
+        :class="statusFilter === item.status ? 'ring-2 ring-brand-500' : ''"
+        @click="statusFilter = statusFilter === item.status ? 'all' : item.status"
+      >
+        <div>
+          <p class="text-xs font-medium text-slate-500">{{ item.label }}</p>
+          <p class="mt-1 text-2xl font-extrabold text-slate-900">{{ summary[item.key] ?? 0 }}</p>
         </div>
+        <span class="size-2.5 rounded-full" :class="item.dot" />
+      </button>
+    </div>
 
-        <section class="mt-6 rounded-xl border border-slate-300 bg-white overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[1400px] text-left">
-              <thead class="bg-slate-50 border-b border-slate-300">
-                <tr class="text-sm text-slate-700">
-                  <th class="px-4 py-4 font-semibold">Request ID</th>
-                  <th class="px-4 py-4 font-semibold">Customer</th>
-                  <th class="px-4 py-4 font-semibold">Shop</th>
-                  <th class="px-4 py-4 font-semibold">Phone Model</th>
-                  <th class="px-4 py-4 font-semibold">Customer Problem</th>
-                  <th class="px-4 py-4 font-semibold">Identified Problem</th>
-                  <th class="px-4 py-4 font-semibold">Cost</th>
-                  <th class="px-4 py-4 font-semibold">Date</th>
-                  <th class="px-4 py-4 font-semibold">Status</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr v-for="record in filteredRequests" :key="record.service_id" class="border-b border-slate-200 align-top">
-                  <td class="px-4 py-4 text-xl font-semibold">#{{ record.service_id }}</td>
-                  <td class="px-4 py-4 text-lg">
-                    <div class="font-semibold">{{ record.customer_name }}</div>
-                    <div class="text-slate-500">{{ record.customer_email }}</div>
-                    <div class="text-slate-500">{{ record.customer_phone }}</div>
-                  </td>
-                  <td class="px-4 py-4 text-lg">{{ record.shop_name }}</td>
-                  <td class="px-4 py-4 text-lg">{{ record.phone_model }}</td>
-                  <td class="px-4 py-4 text-lg whitespace-pre-line">{{ record.customer_problem }}</td>
-                  <td class="px-4 py-4 text-lg whitespace-pre-line">{{ record.shop_problem || 'Not provided yet' }}</td>
-                  <td class="px-4 py-4 text-xl font-semibold">৳{{ formatAmount(record.cost) }}</td>
-                  <td class="px-4 py-4 text-lg">{{ record.date }}</td>
-                  <td class="px-4 py-4"><span :class="statusClass(record.status)">{{ statusLabel(record.status) }}</span></td>
-                </tr>
-
-                <tr v-if="!filteredRequests.length">
-                  <td colspan="9" class="px-4 py-10 text-center text-slate-500">No service request found for this search.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+    <div class="card overflow-hidden">
+      <div class="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-500">
+          Showing <span class="font-semibold text-slate-800">{{ filteredRequests.length }}</span> of {{ requests.length }}
+          <button v-if="statusFilter !== 'all'" type="button" class="ml-2 font-semibold text-brand-700 hover:underline" @click="statusFilter = 'all'">
+            Clear filter
+          </button>
+        </p>
+        <div class="sm:w-80">
+          <SearchInput v-model="search" placeholder="Search customer, shop or model…" />
+        </div>
       </div>
-    </main>
 
-    <footer class="h-12"></footer>
-  </div>
+      <div v-if="filteredRequests.length" class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Request</th>
+              <th>Customer</th>
+              <th>Shop</th>
+              <th>Problem</th>
+              <th>Diagnosis</th>
+              <th>Cost</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="record in filteredRequests" :key="record.service_id">
+              <td>
+                <p class="font-semibold text-slate-900">{{ record.phone_model }}</p>
+                <p class="text-xs text-slate-500">#{{ record.service_id }} · {{ formatDate(record.date) }}</p>
+              </td>
+              <td>
+                <p class="font-medium text-slate-800">{{ record.customer_name }}</p>
+                <p class="text-xs text-slate-500">{{ record.customer_email }}</p>
+                <p class="text-xs text-slate-500">{{ record.customer_phone }}</p>
+              </td>
+              <td class="font-medium text-slate-800">{{ record.shop_name }}</td>
+              <td class="max-w-[220px]"><p class="line-clamp-2 text-slate-600">{{ record.customer_problem }}</p></td>
+              <td class="max-w-[220px]">
+                <p class="line-clamp-2" :class="record.shop_problem ? 'text-slate-600' : 'text-slate-400'">{{ record.shop_problem || 'Not yet' }}</p>
+              </td>
+              <td class="font-semibold whitespace-nowrap text-slate-900">{{ formatMoney(record.cost) }}</td>
+              <td><StatusBadge :status="record.status" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <EmptyState v-else :icon="ClipboardList" title="No requests found" description="Try another search or status." />
+    </div>
+  </AppLayout>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import AdminNavbar from '../../Components/AdminNavbar.vue'
+import { ClipboardList } from 'lucide-vue-next'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import EmptyState from '../../Components/EmptyState.vue'
+import PageHeader from '../../Components/PageHeader.vue'
+import SearchInput from '../../Components/SearchInput.vue'
+import StatusBadge from '../../Components/StatusBadge.vue'
+import { formatDate, formatMoney } from '../../lib/format'
+import { STATUS } from '../../lib/status'
 
 const props = defineProps({
   requests: { type: Array, default: () => [] },
@@ -95,97 +101,27 @@ const props = defineProps({
 })
 
 const search = ref('')
+const statusFilter = ref('all')
+
+const summaryItems = [
+  { key: 'total', label: 'Total requests', status: 'all', dot: 'bg-slate-400' },
+  ...[
+    ['pending', 'pending'],
+    ['accepted', 'accepted'],
+    ['rejected', 'rejected'],
+    ['in_progress', 'in progress'],
+    ['completed', 'completed'],
+    ['sent_from_shop', 'sent from shop'],
+    ['delivered', 'delivered'],
+  ].map(([key, status]) => ({ key, status, label: STATUS[status].label, dot: STATUS[status].dot })),
+]
 
 const filteredRequests = computed(() => {
   const q = search.value.trim().toLowerCase()
-  if (!q) return props.requests
-
   return props.requests.filter((record) => {
-    return [record.customer_name, record.shop_name, record.phone_model, record.status].some((v) =>
-      String(v || '').toLowerCase().includes(q)
-    )
+    if (statusFilter.value !== 'all' && record.status !== statusFilter.value) return false
+    return !q || [record.customer_name, record.customer_email, record.shop_name, record.phone_model, record.status]
+      .some((v) => String(v || '').toLowerCase().includes(q))
   })
 })
-
-function formatAmount(amount) {
-  const n = Number(amount)
-  if (Number.isNaN(n)) return '0'
-  return n.toLocaleString('en-US')
-}
-
-function statusLabel(status) {
-  const map = {
-    pending: 'Pending',
-    accepted: 'Accepted',
-    rejected: 'Rejected',
-    'in progress': 'In Progress',
-    completed: 'Completed',
-    'sent from shop': 'Sent from Shop',
-    delivered: 'Delivered',
-  }
-
-  return map[status] || status
-}
-
-function statusClass(status) {
-  const base = 'inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold'
-
-  const classes = {
-    pending: 'bg-amber-100 text-amber-700',
-    accepted: 'bg-green-100 text-green-700',
-    rejected: 'bg-rose-100 text-rose-700',
-    'in progress': 'bg-yellow-100 text-yellow-700',
-    completed: 'bg-purple-100 text-purple-700',
-    'sent from shop': 'bg-blue-100 text-blue-700',
-    delivered: 'bg-emerald-100 text-emerald-700',
-  }
-
-  return `${base} ${classes[status] || 'bg-slate-100 text-slate-700'}`
-}
 </script>
-
-<style scoped>
-.form-input {
-  width: 100%;
-  min-height: 2.9rem;
-  padding: 0.6rem 0.85rem;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  border-radius: 0.7rem;
-  background: #fff;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.08);
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.7;
-}
-
-.search-input {
-  padding-left: 2.6rem;
-}
-
-.summary-box {
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 0.9rem;
-  background: #fff;
-  padding: 1.05rem;
-}
-
-.summary-label {
-  color: #475569;
-}
-
-.summary-value {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-top: 0.2rem;
-}
-</style>

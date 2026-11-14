@@ -59,7 +59,7 @@ class ShopManagementController extends Controller
 
         $shop->save();
 
-        return back();
+        return back()->with('success', $newStatus === 'activated' ? 'Shop activated.' : 'Shop deactivated.');
     }
 
     public function updatePlan(Request $request, Shop $shop)
@@ -71,7 +71,7 @@ class ShopManagementController extends Controller
         $shop->subscription_plan = $validated['plan'];
         $shop->save();
 
-        return back();
+        return back()->with('success', 'Plan updated.');
     }
 
     public function updateExpiry(Request $request, Shop $shop)
@@ -83,6 +83,6 @@ class ShopManagementController extends Controller
         $shop->expiry_date = $validated['expiry_date'];
         $shop->save();
 
-        return back();
+        return back()->with('success', 'Expiry date updated.');
     }
 }
